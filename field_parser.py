@@ -80,6 +80,7 @@ class Fields(BaseModel):
     # investors: str
     last_funding_round: list[Optional[FundingRounds]]
     last_funding_round_amount: str
+    last_funding_round_date: str
     # last_funding_round_date: str
     number_of_employees: list[Optional[Employees]]
     # founders: list[str]
@@ -100,11 +101,12 @@ def get_fields(prompt : str):
     # print(result)
     dict = {}
     dict["description"] = result.description
-    dict["hq_location"] = result.hq_location
-    dict["industry"] = [i.value for i in result.industry]
-    dict["last_funding_round"] = [i.value for i in result.last_funding_round]
-    dict["last_funding_round_amount"] = result.last_funding_round_amount
-    dict["number_of_employees"] = [i.value for i in result.number_of_employees]
+    dict["location_identifiers"] = result.hq_location
+    dict["categories"] = ", ".join([str(i.value) for i in result.industry])
+    dict["last_funding_type"] = ", ".join([str(i.value) for i in result.last_funding_round])
+    dict["last_funding_amount"] = str(result.last_funding_round_amount)
+    dict["last_funding_at"] = str(result.last_funding_round_date)
+    dict["num_employees_enum"] = ", ".join([str(i.value) for i in result.number_of_employees])
     # dict["founders"] = [i for i in result.founders]
     print(dict)
     return dict
