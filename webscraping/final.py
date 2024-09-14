@@ -27,7 +27,7 @@ def internet_research(query: str, company: str):
 
     research = Task(
         description=f'Given a company name, search the latest news about the company according to the user query. The user query is: {user_query}. The company they want information on is: {company_info}',
-        expected_output='A summary of the given user query on the specified company. Keep it short and concise, no more than 50 words.',
+        expected_output='A summary of the given user query on the specified company. Keep it short and concise, no more than 50 words. At the end, link source for further reading exactly as: [Source](link)',
         agent=researcher
     )
 
@@ -46,5 +46,5 @@ def internet_research(query: str, company: str):
     #     f.write(result)
 
 if __name__ == "__main__":
-    response = internet_research("Recent advancements in Cohere in reranking", "Cohere")
+    response = internet_research("tell me about the recent research in vector databases at this company", "Chroma")
     print(response)
