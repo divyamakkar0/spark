@@ -1,9 +1,11 @@
+import React from 'react';
 import { CSSProperties } from 'react';
+import MeteoriteEffect from '@/components/me'; 
 
 const styles: { [key: string]: CSSProperties } = {
   container: {
     fontFamily: 'serif',
-    backgroundColor: '#fafafa', // More beige background
+    backgroundColor: '#fafafa',
     minHeight: '100vh',
     padding: '20px',
     backgroundImage: 'radial-gradient(#d3d3d3 1px, transparent 1px)',
@@ -12,6 +14,7 @@ const styles: { [key: string]: CSSProperties } = {
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'relative',
   },
   header: {
     display: 'flex',
@@ -98,6 +101,7 @@ export default function Home() {
             DIVE DEEPER
           </button>
         </div>
+        <MeteoriteEffect></MeteoriteEffect>
       </main>
     </div>
   );
