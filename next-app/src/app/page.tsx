@@ -8,7 +8,7 @@ const styles: { [key: string]: CSSProperties } = {
   container: {
     fontFamily: "serif",
     backgroundColor: "#fafafa",
-    minHeight: "100vh",
+    minHeight: "80vh",
     padding: "20px",
     backgroundImage: "radial-gradient(#d3d3d3 1px, transparent 1px)",
     backgroundSize: "20px 20px",
@@ -38,6 +38,8 @@ const styles: { [key: string]: CSSProperties } = {
     maxWidth: "800px",
     margin: "0 auto",
     textAlign: "center",
+    position: "relative",
+    zIndex: 1,
   },
   title: {
     fontSize: "84px",
@@ -71,15 +73,35 @@ const styles: { [key: string]: CSSProperties } = {
     color: "#fff",
   },
   form: {
-    display: "flex",
-    gap: "10px",
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '20px',
+    width: '100%',
+    maxWidth: '500px',
   },
   input: {
-    padding: "15px",
-    border: "2px solid #000",
-    borderRadius: "30px",
-    fontSize: "18px",
-    width: "200px",
+    padding: '15px 25px',
+    border: '2px solid #000',
+    borderRadius: '50px',
+    fontSize: '18px',
+    width: '100%',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    transition: 'all 0.3s ease',
+  },
+  submitButton: {
+    padding: '15px 30px',
+    border: '2px solid #000', // Black border
+    borderRadius: '50px',
+    background: 'transparent', // Transparent background
+    color: '#000', // Black text
+    cursor: 'pointer',
+    fontSize: '18px',
+    fontWeight: 'bold',
+    transition: 'all 0.3s ease',
+    width: '100%',
+    textTransform: 'uppercase',
+    letterSpacing: '2px',
   },
 };
 
@@ -101,6 +123,7 @@ export default function Home() {
       <div style={styles.container}>
 
         <main style={styles.main}>
+
           <h1 style={styles.title}>
             <span style={{ fontStyle: 'italic', color: '#FF4500' }}>Spark!</span>
 
@@ -108,10 +131,7 @@ export default function Home() {
           <p style={styles.description}>
             Ignite your <strong>connections</strong>
           </p>
-          <div style={styles.buttonContainer}> !
-            <button style={{ ...styles.button, ...styles.primaryButton }}>
-              ATTEND A SESSION
-            </button>
+          <div style={styles.buttonContainer}>
             <form onSubmit={handleSubmit} style={styles.form}>
               <input
                 type="text"
@@ -120,8 +140,21 @@ export default function Home() {
                 placeholder="Enter your query"
                 style={styles.input}
               />
-              <button type="submit"  style={styles.button}>
-                DIVE DEEPER
+              <button
+                type="submit"
+                style={styles.submitButton}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = '#FF4500';
+                  e.currentTarget.style.color = '#fff';
+                  e.currentTarget.style.borderColor = '#FF4500';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.color = '#000';
+                  e.currentTarget.style.borderColor = '#000';
+                }}
+              >
+                Dive Deeper
               </button>
             </form>
           </div>

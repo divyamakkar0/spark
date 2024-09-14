@@ -25,7 +25,7 @@ const MeteoriteEffect = () => {
             left: `${-meteorite.startPosition}%`,
           }}
         >
-          <div 
+          <div
             className="meteorite-head"
             style={{ width: `${meteorite.size * 2}px`, height: `${meteorite.size * 2}px` }}
           ></div>
@@ -40,7 +40,7 @@ const MeteoriteEffect = () => {
           bottom: 0;
           overflow: hidden;
           pointer-events: none;
-          z-index: 1;
+          z-index: -1;
         }
         .meteorite {
           position: absolute;
