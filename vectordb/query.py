@@ -60,6 +60,10 @@ def get_companies(prompt:str)->list[str]:
           companies_shortlist.append(company[0].metadata['seq_num'] - 1)
   co = cohere.Client(os.environ['COHERE_API_KEY'])
 
+  with open('inter.txt', 'w') as f:
+    f.write(str(companies_shortlist))
+
+
   query_cohere = str({i:fields[i] for i in fields if i not in void_fields})
   docs = [str(companies[i]) for i in companies_shortlist]
   results = co.rerank(query=query_cohere, documents=docs, top_n=25, model="rerank-english-v3.0")
@@ -69,5 +73,5 @@ def get_companies(prompt:str)->list[str]:
 
 
 if __name__ == '__main__':
-    prompt = input('Enter a prompt: ')
+    prompt = "Gen AI companies in San Francisco with less than 100 employees"
     print(get_companies(prompt))
