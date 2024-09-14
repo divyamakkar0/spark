@@ -3,3 +3,5 @@
 /vectordb/chroma_langchain_db/*
 *.env
 *.pyc 
+node_modules/*
+venv/* 
