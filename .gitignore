@@ -1,3 +1,5 @@
 *.json
 /venv/*
 /vectordb/chroma_langchain_db/*
+*.env
+*.pyc 
