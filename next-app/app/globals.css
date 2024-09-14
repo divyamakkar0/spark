@@ -1,0 +1,8 @@
+
+
+body {
+  font-family: 'Playfair Display', serif; /* Apply the font */
+  background-color: #fafafa; /* Light beige color */
+  background-image: radial-gradient(#e0e0e0 1.5px, transparent 1px);
+  background-size: 20px 20px; /* Adjust the dot spacing */
+}
