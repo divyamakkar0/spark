@@ -69,27 +69,21 @@ const styles: { [key: string]: CSSProperties } = {
 
 export default function Home() {
   return (
-    
+
     <div style={styles.container}>
-      <header style={styles.header}>
-        <h1 style={{fontSize: '36px'}}>Spark</h1>
-        <button style={styles.menuButton}>☰</button>
-      </header>
       
 
-      
+
+
       <main style={styles.main}>
         <h1 style={styles.title}>
-          Spark
-          <span style={{fontSize: '0.5em', verticalAlign: 'top', marginLeft: '5px'}}>⦿</span>
+          <span style={{ fontStyle: 'italic', color: '#FF4500' }}>Spark</span>
         </h1>
-        
+
         <p style={styles.description}>
-          We host weekly co-working sessions for you to<br />
-          work on your <em>passion projects</em> with likeminded<br />
-          people.
+          Ignite your connections !
         </p>
-        
+
         <div style={styles.buttonContainer}>
           <button style={{...styles.button, ...styles.primaryButton}}>
             ATTEND A SESSION

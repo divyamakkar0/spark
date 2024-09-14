@@ -2,4 +2,6 @@
 /venv/*
 /vectordb/chroma_langchain_db/*
 *.env
-*.pyc 
+*.pyc
+!package-lock.json
+!package.json
