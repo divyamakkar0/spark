@@ -1,8 +1,11 @@
 
 
 body {
-  font-family: 'Playfair Display', serif; /* Apply the font */
-  background-color: #fafafa; /* Light beige color */
+  font-family: 'Playfair Display', serif;
+  background-color: #fafafa;
   background-image: radial-gradient(#e0e0e0 1.5px, transparent 1px);
-  background-size: 20px 20px; /* Adjust the dot spacing */
+  background-size: 20px 20px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }

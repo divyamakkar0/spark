@@ -21,7 +21,12 @@ interface Connection {
 export default function PlayGroundPage() {
   const [blocks, setBlocks] = useState<Block[]>([]);
   const [connections, setConnections] = useState<Connection[]>([]);
-  const [activeConnection, setActiveConnection] = useState<{ id: string; position: 'top' | 'right' | 'bottom' | 'left'; x: number; y: number } | null>(null);
+  const [activeConnection, setActiveConnection] = useState<{
+    id: string;
+    position: 'top' | 'right' | 'bottom' | 'left';
+    x: number;
+    y: number;
+  } | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
@@ -42,7 +47,7 @@ export default function PlayGroundPage() {
     const newBlock: Block = {
       id: Date.now().toString(),
       title,
-      description: userQuery, // The new line will be added in the ConnectionBlock component
+      description: userQuery,
       position: {
         x: Math.random() * (window.innerWidth - 300) + 150,
         y: Math.random() * (window.innerHeight - 150) + 75
@@ -89,7 +94,7 @@ export default function PlayGroundPage() {
       return (
         <svg key={connection.id} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
           <path
-            d={`M ${fromPos.x} ${fromPos.y} H ${(fromPos.x + toPos.x) / 2} V ${toPos.y} H ${toPos.x}`}
+            d={`M ${fromPos.x} ${fromPos.y} L ${toPos.x} ${toPos.y}`}
             fill="none"
             stroke="orange"
             strokeWidth="2"
@@ -111,7 +116,7 @@ export default function PlayGroundPage() {
     return (
       <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
         <path
-          d={`M ${fromPos.x} ${fromPos.y} H ${(fromPos.x + toPos.x) / 2} V ${toPos.y} H ${toPos.x}`}
+          d={`M ${fromPos.x} ${fromPos.y} L ${toPos.x} ${toPos.y}`}
           fill="none"
           stroke="rgba(255, 165, 0, 0.5)"
           strokeWidth="2"
@@ -128,13 +133,13 @@ export default function PlayGroundPage() {
 
     switch (position) {
       case 'top':
-        return { x: x + width / 2, y };
+        return { x: x + width / 2, y: y - 6 };
       case 'right':
-        return { x: x + width, y: y + height / 2 };
+        return { x: x + width + 6, y: y + height / 2 };
       case 'bottom':
-        return { x: x + width / 2, y: y + height };
+        return { x: x + width / 2, y: y + height + 6 };
       case 'left':
-        return { x, y: y + height / 2 };
+        return { x: x - 6, y: y + height / 2 };
     }
   };
 

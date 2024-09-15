@@ -1,5 +1,4 @@
-import React, { useState, useRef, useEffect, ReactNode, useLayoutEffect } from 'react';
-import Head from 'next/head';
+import React, { useState, useRef, useEffect, ReactNode } from 'react';
 
 interface InfiniteGridProps {
   children: (props: { zoom: number; gridOffset: { x: number; y: number } }) => ReactNode;
@@ -14,20 +13,7 @@ const InfiniteGrid: React.FC<InfiniteGridProps> = ({ children }) => {
   const [startX, setStartX] = useState(0);
   const [startY, setStartY] = useState(0);
 
-  useLayoutEffect(() => {
-    const preventDefault = (e: WheelEvent) => {
-      if (e.ctrlKey) {
-        e.preventDefault();
-      }
-    };
-    document.addEventListener('wheel', preventDefault, { passive: false });
-    return () => document.removeEventListener('wheel', preventDefault);
-  }, []);
-
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
     const handleMouseDown = (e: MouseEvent) => {
       if ((e.target as HTMLElement).closest('.connection-block')) return;
       setIsDragging(true);
@@ -39,32 +25,26 @@ const InfiniteGrid: React.FC<InfiniteGridProps> = ({ children }) => {
       if (!isDragging) return;
       const dx = e.clientX - startX;
       const dy = e.clientY - startY;
-      const newOffsetX = offsetX + dx / zoom;
-      const newOffsetY = offsetY + dy / zoom;
-      setOffsetX(newOffsetX);
-      setOffsetY(newOffsetY);
+      setOffsetX(prev => prev + dx / zoom);
+      setOffsetY(prev => prev + dy / zoom);
       setStartX(e.clientX);
       setStartY(e.clientY);
-
-      // Update all blocks' positions
-      const event = new CustomEvent('gridMove', { detail: { dx: dx / zoom, dy: dy / zoom } });
-      window.dispatchEvent(event);
     };
 
     const handleMouseUp = () => {
       setIsDragging(false);
     };
 
-    container.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
 
     return () => {
-      container.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [zoom, isDragging, offsetX, offsetY]);
+  }, [isDragging, startX, startY, zoom]);
 
   const handleZoomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newZoom = parseFloat(e.target.value);
@@ -73,16 +53,11 @@ const InfiniteGrid: React.FC<InfiniteGridProps> = ({ children }) => {
 
   return (
     <>
-      <Head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-      </Head>
       <div style={{ 
         position: 'relative', 
         width: '100vw', 
         height: '100vh', 
         overflow: 'hidden',
-        msOverflowStyle: 'none',
-        scrollbarWidth: 'none',
       }}>
         <div
           ref={containerRef}
@@ -96,55 +71,33 @@ const InfiniteGrid: React.FC<InfiniteGridProps> = ({ children }) => {
             background: '#fafafa',
             backgroundImage: 'radial-gradient(#d3d3d3 1px, transparent 1px)',
             backgroundSize: `${20 * zoom}px ${20 * zoom}px`,
-            backgroundPosition: `${offsetX * zoom}px ${offsetY * zoom}px`,
-            overflow: 'hidden',
-            msOverflowStyle: 'none',
-            scrollbarWidth: 'none',
-            WebkitUserSelect: 'none',
-            MozUserSelect: 'none',
-            msUserSelect: 'none',
+            transform: `scale(${zoom}) translate(${offsetX}px, ${offsetY}px)`,
+            transformOrigin: '0 0',
             userSelect: 'none',
           }}
         >
-          <div
-            style={{
-              transform: `scale(${zoom}) translate(${offsetX}px, ${offsetY}px)`,
-              transformOrigin: '0 0',
-              transition: 'transform 0.1s ease-out',
-            }}
-          >
-            {children({ zoom, gridOffset: { x: offsetX, y: offsetY } })}
-          </div>
+          {children({ zoom, gridOffset: { x: offsetX, y: offsetY } })}
         </div>
         <div
           style={{
             position: 'absolute',
             right: '10px',
             top: '50%',
-            transform: 'translateY(-50%)',
+            transform: 'translateY(-50%) rotate(-90deg)',
             display: 'flex',
-            flexDirection: 'column',
             alignItems: 'center',
           }}
         >
           <input
             type="range"
             min="0.5"
-            max="3"
+            max="2"
             step="0.1"
             value={zoom}
             onChange={handleZoomChange}
             style={{
-              WebkitAppearance: 'none',
-              appearance: 'none',
-              width: '200px',
-              height: '10px',
-              background: '#FFE0B2',
-              outline: 'none',
-              opacity: '1',
-              transform: 'rotate(-90deg)',
+              width: '150px',
               cursor: 'pointer',
-              borderRadius: '5px',
             }}
           />
         </div>

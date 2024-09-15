@@ -94,14 +94,14 @@ const ConnectionBlock: React.FC<ConnectionBlockProps> = ({
     wordBreak: 'break-word',
   };
 
-  const formattedDescription = `\n${description}`;
+  const formattedDescription = description.trim();
 
   const handleConnectionNodeClick = (nodePosition: 'top' | 'right' | 'bottom' | 'left') => {
     const rect = blockRef.current?.getBoundingClientRect();
     if (rect) {
       const x = rect.left + (nodePosition === 'left' ? 0 : nodePosition === 'right' ? rect.width : rect.width / 2);
       const y = rect.top + (nodePosition === 'top' ? 0 : nodePosition === 'bottom' ? rect.height : rect.height / 2);
-      onConnectionClick(id, nodePosition, x / zoom, y / zoom);
+      onConnectionClick(id, nodePosition, (x - gridOffset.x) / zoom, (y - gridOffset.y) / zoom);
     }
   };
 

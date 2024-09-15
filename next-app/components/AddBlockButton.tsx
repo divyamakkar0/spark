@@ -11,7 +11,7 @@ const AddBlockButton: React.FC<AddBlockButtonProps> = ({ onAddBlock }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (selectedOption) {
+    if (selectedOption && userQuery) {
       onAddBlock(selectedOption, userQuery);
       setShowForm(false);
       setSelectedOption('');
@@ -73,14 +73,14 @@ const AddBlockButton: React.FC<AddBlockButtonProps> = ({ onAddBlock }) => {
                 color: '#333',
                 backgroundColor: '#FFF3E0',
               }}
+              required
             >
               <option value="" disabled style={{ color: '#999' }}>Select a block type...</option>
-              <option value="Add Category">Category</option>
+              <option value="Category">Category</option>
               <option value="Web Search">Web Search</option>
               <option value="Find Employees">Find Employees</option>
               <option value="Outreach">Outreach</option>
-              <option value="Add Resume">Resume</option>
-
+              <option value="Resume">Resume</option>
             </select>
             <textarea
               value={userQuery}
@@ -96,6 +96,7 @@ const AddBlockButton: React.FC<AddBlockButtonProps> = ({ onAddBlock }) => {
                 fontSize: '14px',
                 resize: 'vertical',
               }}
+              required
             />
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <button
