@@ -1,22 +1,110 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 
 interface AddBlockButtonProps {
-  onAddBlock: (title: string, userQuery: string) => void;
+  onAddBlock: (title: string, userQuery: string | number | File) => void;
 }
 
 const AddBlockButton: React.FC<AddBlockButtonProps> = ({ onAddBlock }) => {
   const [showForm, setShowForm] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
   const [userQuery, setUserQuery] = useState('');
+  const [categoryNumber, setCategoryNumber] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (selectedOption && userQuery) {
-      onAddBlock(selectedOption, userQuery);
+    if (selectedOption) {
+      let submitValue: string | number | File = userQuery;
+      if (selectedOption === 'Category') {
+        submitValue = parseInt(categoryNumber);
+      } else if (selectedOption === 'Resume' && fileInputRef.current?.files?.[0]) {
+        submitValue = fileInputRef.current.files[0];
+      }
+      onAddBlock(selectedOption, submitValue);
       setShowForm(false);
       setSelectedOption('');
       setUserQuery('');
+      setCategoryNumber('');
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
+  };
+
+  const getPlaceholder = () => {
+    switch (selectedOption) {
+      case 'Web Search':
+        return 'Enter research question about the companies';
+      case 'Find Employees':
+        return 'Gather specific employee type';
+      case 'Outreach':
+        return 'Enter specific resume features to include';
+      default:
+        return 'Enter your query...';
+    }
+  };
+
+  const renderInput = () => {
+    if (selectedOption === 'Category') {
+      return (
+        <select
+          value={categoryNumber}
+          onChange={(e) => setCategoryNumber(e.target.value)}
+          style={{
+            marginBottom: '15px',
+            width: '100%',
+            padding: '10px',
+            borderRadius: '8px',
+            border: '1px solid #FFE0B2',
+            fontSize: '14px',
+            color: '#333',
+            backgroundColor: '#FFF3E0',
+          }}
+          required
+        >
+          <option value="" disabled>Select a category...</option>
+          {[...Array(10)].map((_, i) => (
+            <option key={i + 1} value={i + 1}>{i + 1}</option>
+          ))}
+        </select>
+      );
+    } else if (selectedOption === 'Resume') {
+      return (
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{
+            marginBottom: '15px',
+            width: '100%',
+            padding: '10px',
+            borderRadius: '8px',
+            border: '1px solid #FFE0B2',
+            fontSize: '14px',
+            color: '#333',
+            backgroundColor: '#FFF3E0',
+          }}
+          required
+        />
+      );
+    } else if (['Web Search', 'Find Employees', 'Outreach'].includes(selectedOption)) {
+      return (
+        <textarea
+          value={userQuery}
+          onChange={(e) => setUserQuery(e.target.value)}
+          placeholder={getPlaceholder()}
+          style={{
+            width: '100%',
+            minHeight: '100px',
+            marginBottom: '15px',
+            padding: '10px',
+            borderRadius: '8px',
+            border: '1px solid #FFE0B2',
+            fontSize: '14px',
+            resize: 'vertical',
+          }}
+          required
+        />
+      );
+    }
+    return null;
   };
 
   return (
@@ -75,29 +163,14 @@ const AddBlockButton: React.FC<AddBlockButtonProps> = ({ onAddBlock }) => {
               }}
               required
             >
-              <option value="" disabled style={{ color: '#999' }}>Select a block type...</option>
+              <option value="" disabled>Select a block type...</option>
               <option value="Category">Category</option>
               <option value="Web Search">Web Search</option>
               <option value="Find Employees">Find Employees</option>
               <option value="Outreach">Outreach</option>
               <option value="Resume">Resume</option>
             </select>
-            <textarea
-              value={userQuery}
-              onChange={(e) => setUserQuery(e.target.value)}
-              placeholder="Enter your query..."
-              style={{
-                width: '100%',
-                minHeight: '100px',
-                marginBottom: '15px',
-                padding: '10px',
-                borderRadius: '8px',
-                border: '1px solid #FFE0B2',
-                fontSize: '14px',
-                resize: 'vertical',
-              }}
-              required
-            />
+            {renderInput()}
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <button
                 type="button"
