@@ -7,7 +7,7 @@ interface ConnectionBlockProps {
   position: { x: number; y: number };
   isStarter?: boolean;
   onPositionChange: (id: string, newPosition: { x: number; y: number }) => void;
-  onConnectionClick: (id: string, position: 'top' | 'right' | 'bottom' | 'left') => void;
+  onConnectionClick: (id: string, position: 'top' | 'right' | 'bottom' | 'left', x: number, y: number) => void;
   id: string;
   zoom: number;
   gridOffset: { x: number; y: number };
@@ -74,9 +74,9 @@ const ConnectionBlock: React.FC<ConnectionBlockProps> = ({
     userSelect: 'none',
     transform: `scale(${zoom})`,
     transformOrigin: 'top left',
-    maxWidth: '300px', // Change to maxWidth
-    width: 'auto', // Allow width to adjust
-    height: 'auto', // Allow height to adjust
+    maxWidth: '300px',
+    width: 'auto',
+    height: 'auto',
   };
 
   const titleStyle: React.CSSProperties = {
@@ -90,12 +90,20 @@ const ConnectionBlock: React.FC<ConnectionBlockProps> = ({
     marginTop: '10px',
     whiteSpace: 'pre-wrap',
     lineHeight: '1.5',
-    overflowWrap: 'break-word', // Ensure long words don't overflow
-    wordBreak: 'break-word', // Allow breaking of long words
+    overflowWrap: 'break-word',
+    wordBreak: 'break-word',
   };
 
-  // Add a new line before the description
   const formattedDescription = `\n${description}`;
+
+  const handleConnectionNodeClick = (nodePosition: 'top' | 'right' | 'bottom' | 'left') => {
+    const rect = blockRef.current?.getBoundingClientRect();
+    if (rect) {
+      const x = rect.left + (nodePosition === 'left' ? 0 : nodePosition === 'right' ? rect.width : rect.width / 2);
+      const y = rect.top + (nodePosition === 'top' ? 0 : nodePosition === 'bottom' ? rect.height : rect.height / 2);
+      onConnectionClick(id, nodePosition, x / zoom, y / zoom);
+    }
+  };
 
   return (
     <div ref={blockRef} style={blockStyle} onMouseDown={handleMouseDown} className="connection-block">
@@ -103,10 +111,10 @@ const ConnectionBlock: React.FC<ConnectionBlockProps> = ({
         <div style={titleStyle}>{title}</div>
         <div style={descriptionStyle}>{formattedDescription}</div>
       </div>
-      <Connection position="top" onConnectionClick={() => onConnectionClick(id, 'top')} />
-      <Connection position="right" onConnectionClick={() => onConnectionClick(id, 'right')} />
-      <Connection position="bottom" onConnectionClick={() => onConnectionClick(id, 'bottom')} />
-      <Connection position="left" onConnectionClick={() => onConnectionClick(id, 'left')} />
+      <Connection position="top" onConnectionClick={() => handleConnectionNodeClick('top')} />
+      <Connection position="right" onConnectionClick={() => handleConnectionNodeClick('right')} />
+      <Connection position="bottom" onConnectionClick={() => handleConnectionNodeClick('bottom')} />
+      <Connection position="left" onConnectionClick={() => handleConnectionNodeClick('left')} />
     </div>
   );
 };

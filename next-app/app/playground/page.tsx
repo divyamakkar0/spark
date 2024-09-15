@@ -21,7 +21,8 @@ interface Connection {
 export default function PlayGroundPage() {
   const [blocks, setBlocks] = useState<Block[]>([]);
   const [connections, setConnections] = useState<Connection[]>([]);
-  const [activeConnection, setActiveConnection] = useState<{ id: string; position: 'top' | 'right' | 'bottom' | 'left' } | null>(null);
+  const [activeConnection, setActiveConnection] = useState<{ id: string; position: 'top' | 'right' | 'bottom' | 'left'; x: number; y: number } | null>(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     const centerX = window.innerWidth / 2 - 150;
@@ -56,13 +57,13 @@ export default function PlayGroundPage() {
     ));
   };
 
-  const handleConnectionClick = (id: string, position: 'top' | 'right' | 'bottom' | 'left') => {
+  const handleConnectionClick = (id: string, position: 'top' | 'right' | 'bottom' | 'left', x: number, y: number) => {
     if (!activeConnection) {
-      setActiveConnection({ id, position });
+      setActiveConnection({ id, position, x, y });
     } else if (activeConnection.id !== id) {
       const newConnection: Connection = {
         id: Date.now().toString(),
-        from: activeConnection,
+        from: { id: activeConnection.id, position: activeConnection.position },
         to: { id, position },
       };
       setConnections([...connections, newConnection]);
@@ -70,6 +71,10 @@ export default function PlayGroundPage() {
     } else {
       setActiveConnection(null);
     }
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    setMousePosition({ x: e.clientX, y: e.clientY });
   };
 
   const renderConnections = () => {
@@ -83,17 +88,37 @@ export default function PlayGroundPage() {
 
       return (
         <svg key={connection.id} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
-          <line
-            x1={fromPos.x}
-            y1={fromPos.y}
-            x2={toPos.x}
-            y2={toPos.y}
+          <path
+            d={`M ${fromPos.x} ${fromPos.y} H ${(fromPos.x + toPos.x) / 2} V ${toPos.y} H ${toPos.x}`}
+            fill="none"
             stroke="orange"
             strokeWidth="2"
           />
         </svg>
       );
     });
+  };
+
+  const renderActiveConnection = () => {
+    if (!activeConnection) return null;
+
+    const fromBlock = blocks.find(block => block.id === activeConnection.id);
+    if (!fromBlock) return null;
+
+    const fromPos = getConnectionPosition(fromBlock, activeConnection.position);
+    const toPos = { x: mousePosition.x, y: mousePosition.y };
+
+    return (
+      <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
+        <path
+          d={`M ${fromPos.x} ${fromPos.y} H ${(fromPos.x + toPos.x) / 2} V ${toPos.y} H ${toPos.x}`}
+          fill="none"
+          stroke="rgba(255, 165, 0, 0.5)"
+          strokeWidth="2"
+          strokeDasharray="5,5"
+        />
+      </svg>
+    );
   };
 
   const getConnectionPosition = (block: Block, position: 'top' | 'right' | 'bottom' | 'left') => {
@@ -114,7 +139,7 @@ export default function PlayGroundPage() {
   };
 
   return (
-    <div style={{ width: '100vw', height: '100vh', overflow: 'hidden' }}>
+    <div style={{ width: '100vw', height: '100vh', overflow: 'hidden' }} onMouseMove={handleMouseMove}>
       <InfiniteGrid>
         {({ zoom, gridOffset }) => (
           <>
@@ -133,6 +158,7 @@ export default function PlayGroundPage() {
               />
             ))}
             {renderConnections()}
+            {renderActiveConnection()}
           </>
         )}
       </InfiniteGrid>
