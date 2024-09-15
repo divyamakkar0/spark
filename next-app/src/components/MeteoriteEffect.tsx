@@ -2,17 +2,24 @@
 import React from 'react';
 
 const MeteoriteEffect = () => {
-  const meteorites = Array.from({ length: 5 }, (_, i) => ({
-    id: i,
-    delay: Math.random() * 5, // Increased delay for fewer meteors at once
-    duration: 6 + Math.random() * 3, // Between 6 and 10 seconds for slower movement
-    size: 2 + Math.random() * 3, // Size between 2 and 5
-    startPosition: Math.random() * 100, // Random start position along the top-left edge
-  }));
+  const meteorites = Array.from({ length: 5 }, (_, i) => {
+    const isFromTop = Math.random() > 0.5;
+    const angle = 30; // Uniform angle between 30 and 45 degrees
+
+    return {
+      id: i,
+      delay: Math.random() * 15, // Increased delay range for more randomness
+      duration: 8 + Math.random() * 4, // Between 8 and 12 seconds for slower movement
+      size: 2 + Math.random() * 3, // Size between 2 and 5
+      startPosition: Math.random() * 80 + 10, // Avoid spawning too close to the edges
+      isFromTop, // Randomly choose between top and left origin
+      angle,
+    };
+  });
 
   return (
     <div className="meteorite-container">
-      {meteorites.map(meteorite => (
+      {meteorites.map((meteorite) => (
         <div
           key={meteorite.id}
           className="meteorite"
@@ -21,9 +28,11 @@ const MeteoriteEffect = () => {
             animationDuration: `${meteorite.duration}s`,
             width: `${meteorite.size * 25}px`,
             height: `${meteorite.size}px`,
-            top: `${meteorite.startPosition}%`,
-            left: `${-meteorite.startPosition}%`,
-          }}
+            top: meteorite.isFromTop ? `-${meteorite.size * 2}px` : `${meteorite.startPosition}%`,
+            left: meteorite.isFromTop ? `${meteorite.startPosition}%` : `-${meteorite.size * 2}px`,
+            '--angle': `${meteorite.angle}deg`,
+            transformOrigin: meteorite.isFromTop ? 'right center' : 'left center',
+          } as React.CSSProperties}
         >
           <div
             className="meteorite-head"
@@ -44,9 +53,15 @@ const MeteoriteEffect = () => {
         }
         .meteorite {
           position: absolute;
-          background: linear-gradient(to right, transparent, rgba(255, 165, 0, 0.4) 50%, transparent);
-          transform-origin: right center;
+          background: linear-gradient(
+            to right,
+            transparent,
+            rgba(255, 165, 0, 0.4) 50%,
+            transparent
+          );
+          opacity: 0; /* Hide meteorites initially */
           animation: meteorite linear infinite;
+          will-change: transform, opacity; /* Optimize for performance */
         }
         .meteorite-head {
           position: absolute;
@@ -59,8 +74,8 @@ const MeteoriteEffect = () => {
         }
         @keyframes meteorite {
           0% {
-            transform: translateX(0) translateY(0) rotate(45deg);
-            opacity: 1;
+            transform: translateX(0) translateY(0) rotate(var(--angle));
+            opacity: 1; /* Make meteorite visible at the start of animation */
           }
           30% {
             opacity: 1;
@@ -69,7 +84,7 @@ const MeteoriteEffect = () => {
             opacity: 0;
           }
           100% {
-            transform: translateX(150vw) translateY(150vh) rotate(45deg);
+            transform: translateX(200vw) translateY(200vh) rotate(var(--angle));
             opacity: 0;
           }
         }

@@ -121,6 +121,9 @@ const styles: { [key: string]: CSSProperties } = {
     color: "#333333",
     fontFamily: '"Playfair Display", serif',
   },
+  nonSelectable: {
+    userSelect: 'none',
+  },
 };
 
 
@@ -169,20 +172,19 @@ export default function Home() {
   return (
     <>
     {state === State.LOADING && (
-
       <div style={styles.container}>
         <div style={styles.logo}>Spark</div>
         <main style={styles.main}>
-          <h1 style={styles.title}>
+          <h1 style={{...styles.title, ...styles.nonSelectable}}>
             <span style={{ fontStyle: 'italic', color: '#FF7F50' }}>Spark! </span>
             <TypewriterEffect />
           </h1>
-          <p style={styles.description}>
+          <p style={{...styles.description, ...styles.nonSelectable}}>
             Web <em>research</em> and <em>outreach</em> tool for <strong>startups</strong>
           </p>
           <div style={styles.buttonContainer}>
             <form onSubmit={submitQuery} style={styles.form}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '15px', width: '100%' }}>
                 <input
                   type="text"
                   value={query}
@@ -199,25 +201,20 @@ export default function Home() {
               </div>
               <button
                 type="submit"
-                style={styles.submitButton}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = '#FF7F50';
-                  e.currentTarget.style.color = '#fff';
-                  e.currentTarget.style.borderColor = '#FF7F50';
+                style={{
+                  ...styles.submitButton,
+                  opacity: 0.6,
+                  cursor: 'not-allowed',
                 }}
-                onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'transparent';
-                    e.currentTarget.style.color = '#000';
-                    e.currentTarget.style.borderColor = '#000';
-                  }}
-                >
-                  Dive Deeper
-                </button>
-              </form>
-            </div>
-            {memoizedMeteoriteEffect}
-          </main>
-        </div>
+                disabled
+              >
+                Dive Deeper
+              </button>
+            </form>
+          </div>
+          {memoizedMeteoriteEffect}
+        </main>
+      </div>
     )}
     {state === State.SUCCESS && <div>Success</div>}
     {state === State.ERROR && <div>Error</div>}
@@ -226,11 +223,11 @@ export default function Home() {
       <div style={styles.container}>
         <div style={styles.logo}>Spark</div>
         <main style={styles.main}>
-          <h1 style={styles.title}>
+          <h1 style={{...styles.title, ...styles.nonSelectable}}>
             <span style={{ fontStyle: 'italic', color: '#FF7F50' }}>Spark! </span>
             <TypewriterEffect />
           </h1>
-          <p style={styles.description}>
+          <p style={{...styles.description, ...styles.nonSelectable}}>
             Web <em>research</em> and <em>outreach</em> tool for <strong>startups</strong>
           </p>
           <div style={styles.buttonContainer}>

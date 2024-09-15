@@ -41,7 +41,7 @@ export default function ModernCompanyDashboard() {
     if (!companies) return null;
     return (
       <div className="dashboard">
-        <h1 className="dashboard-title">{query}</h1>
+        <h1 className="dashboard-title" style={{ userSelect: 'none' }}>{query}</h1>
         <div className="table-container">
           <table className="company-table">
             <thead>
