@@ -116,22 +116,38 @@ const InfiniteGrid: React.FC<InfiniteGridProps> = ({ children }) => {
             {children({ zoom, gridOffset: { x: offsetX, y: offsetY } })}
           </div>
         </div>
-        <input
-          type="range"
-          min="0.5"
-          max="3"
-          step="0.1"
-          value={zoom}
-          onChange={handleZoomChange}
+        <div
           style={{
             position: 'absolute',
-            right: '20px',
+            right: '10px',
             top: '50%',
-            transform: 'translateY(-50%) rotate(-90deg)',
-            transformOrigin: 'right center',
-            height: '200px',
+            transform: 'translateY(-50%)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
           }}
-        />
+        >
+          <input
+            type="range"
+            min="0.5"
+            max="3"
+            step="0.1"
+            value={zoom}
+            onChange={handleZoomChange}
+            style={{
+              WebkitAppearance: 'none',
+              appearance: 'none',
+              width: '200px',
+              height: '10px',
+              background: '#FFE0B2',
+              outline: 'none',
+              opacity: '1',
+              transform: 'rotate(-90deg)',
+              cursor: 'pointer',
+              borderRadius: '5px',
+            }}
+          />
+        </div>
       </div>
     </>
   );
