@@ -1,17 +1,19 @@
 "use client";
 import React, { useState, useMemo } from "react";
 import { CSSProperties } from "react";
-import { useRouter } from 'next/navigation';
 import MeteoriteEffect from "../components/MeteoriteEffect";
-import Spinner from "../components/Spinner";
+import { useRouter } from 'next/navigation';
 import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import Spinner from "../components/Spinner";
+
+
 
 const styles: { [key: string]: CSSProperties } = {
   container: {
     fontFamily: "serif",
     backgroundColor: "#fafafa",
-    minHeight: "80vh",
+    minHeight: "100vh",
     padding: "20px",
     backgroundImage: "radial-gradient(#d3d3d3 1px, transparent 1px)",
     backgroundSize: "20px 20px",
@@ -41,8 +43,6 @@ const styles: { [key: string]: CSSProperties } = {
     maxWidth: "800px",
     margin: "0 auto",
     textAlign: "center",
-    position: "relative",
-    zIndex: 1,
   },
   title: {
     fontSize: "84px",
@@ -76,35 +76,15 @@ const styles: { [key: string]: CSSProperties } = {
     color: "#fff",
   },
   form: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: '20px',
-    width: '100%',
-    maxWidth: '500px',
+    display: "flex",
+    gap: "10px",
   },
   input: {
-    padding: '15px 25px',
-    border: '2px solid #000',
-    borderRadius: '50px',
-    fontSize: '18px',
-    width: '100%',
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-    transition: 'all 0.3s ease',
-  },
-  submitButton: {
-    padding: '15px 30px',
-    border: '2px solid #000', // Black border
-    borderRadius: '50px',
-    background: 'transparent', // Transparent background
-    color: '#000', // Black text
-    cursor: 'pointer',
-    fontSize: '18px',
-    fontWeight: 'bold',
-    transition: 'all 0.3s ease',
-    width: '100%',
-    textTransform: 'uppercase',
-    letterSpacing: '2px',
+    padding: "15px",
+    border: "2px solid #000",
+    borderRadius: "30px",
+    fontSize: "18px",
+    width: "200px",
   },
 };
 
@@ -118,6 +98,7 @@ enum State {
 
 
 export default function Home() {
+
 
   const router = useRouter();
   const [query, setQuery] = useState("");
@@ -148,61 +129,61 @@ export default function Home() {
     setState(State.SUCCESS);
     router.push('/query');
   };
-
   const memoizedMeteoriteEffect = useMemo(() => <MeteoriteEffect />, []);
 
   return (
     <>
-      {state === State.LOADING && <Spinner />}
-      {state === State.SUCCESS && <div>Success</div>}
-      {state === State.ERROR && <div>Error</div>}
-      {state === State.IDLE && (
+    {state === State.LOADING && <Spinner />}
+    {state === State.SUCCESS && <div>Success</div>}
+    {state === State.ERROR && <div>Error</div>}
+    {state === State.IDLE && (
 
-        <div style={styles.container}>
-
-          <main style={styles.main}>
-
-            <h1 style={styles.title}>
-              <span style={{ fontStyle: 'italic', color: '#FF4500' }}>Spark!</span>
-
-            </h1>
-            <p style={styles.description}>
-              Ignite your <strong>connections</strong>
-            </p>
-            <div style={styles.buttonContainer}>
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                submitQuery();
-              }} style={styles.form}>
-                <input
-                  type="text"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Enter your query"
-                  style={styles.input}
-                />
-                <button
-                  type="submit"
-                  style={styles.submitButton}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = '#FF4500';
-                    e.currentTarget.style.color = '#fff';
-                    e.currentTarget.style.borderColor = '#FF4500';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'transparent';
-                    e.currentTarget.style.color = '#000';
-                    e.currentTarget.style.borderColor = '#000';
-                  }}
-                >
-                  Dive Deeper
-                </button>
-              </form>
-            </div>
-            {memoizedMeteoriteEffect}
-          </main>
-        </div>
-      )}
+      <div style={styles.container}>
+        <header style={styles.header}>
+          <h1 style={{ fontSize: "36px" }}>Spark</h1>
+          <button style={styles.menuButton}>☰</button>
+        </header>
+        <main style={styles.main}>
+          <h1 style={styles.title}>
+            Spark
+            <span
+              style={{
+                fontSize: "0.5em",
+                verticalAlign: "top",
+                marginLeft: "5px",
+              }}
+            >
+              ⦿
+            </span>
+          </h1>
+          <p style={styles.description}>
+            We host weekly co-working sessions for you to
+            <br />
+            work on your <em>passion projects</em> with likeminded
+            <br />
+            people.
+          </p>
+          <div style={styles.buttonContainer}>
+            <button style={{ ...styles.button, ...styles.primaryButton }}>
+              ATTEND A SESSION
+            </button>
+            <form onSubmit={submitQuery} style={styles.form}>
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Enter your query"
+                style={styles.input}
+              />
+              <button type="submit"  style={styles.button}>
+                DIVE DEEPER
+              </button>
+            </form>
+          </div>
+          {memoizedMeteoriteEffect}
+        </main>
+      </div>
+    )}
     </>
   );
 }
