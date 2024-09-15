@@ -47,7 +47,7 @@ const InfiniteGrid: React.FC<InfiniteGridProps> = ({ children }) => {
       setStartY(e.clientY);
 
       // Update all blocks' positions
-      const event = new CustomEvent('gridMove', { detail: { newOffsetX, newOffsetY } });
+      const event = new CustomEvent('gridMove', { detail: { dx: dx / zoom, dy: dy / zoom } });
       window.dispatchEvent(event);
     };
 
