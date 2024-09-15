@@ -74,8 +74,9 @@ const ConnectionBlock: React.FC<ConnectionBlockProps> = ({
     userSelect: 'none',
     transform: `scale(${zoom})`,
     transformOrigin: 'top left',
-    width: '300px',
-    minHeight: '150px',
+    maxWidth: '300px', // Change to maxWidth
+    width: 'auto', // Allow width to adjust
+    height: 'auto', // Allow height to adjust
   };
 
   const titleStyle: React.CSSProperties = {
@@ -89,12 +90,19 @@ const ConnectionBlock: React.FC<ConnectionBlockProps> = ({
     marginTop: '10px',
     whiteSpace: 'pre-wrap',
     lineHeight: '1.5',
+    overflowWrap: 'break-word', // Ensure long words don't overflow
+    wordBreak: 'break-word', // Allow breaking of long words
   };
+
+  // Add a new line before the description
+  const formattedDescription = `\n${description}`;
 
   return (
     <div ref={blockRef} style={blockStyle} onMouseDown={handleMouseDown} className="connection-block">
-      <div style={titleStyle}>{title}</div>
-      <div style={descriptionStyle}>{description}</div>
+      <div>
+        <div style={titleStyle}>{title}</div>
+        <div style={descriptionStyle}>{formattedDescription}</div>
+      </div>
       <Connection position="top" onConnectionClick={() => onConnectionClick(id, 'top')} />
       <Connection position="right" onConnectionClick={() => onConnectionClick(id, 'right')} />
       <Connection position="bottom" onConnectionClick={() => onConnectionClick(id, 'bottom')} />

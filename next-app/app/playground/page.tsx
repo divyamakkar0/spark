@@ -30,7 +30,7 @@ export default function PlayGroundPage() {
       { 
         id: '1', 
         title: 'Company Description', 
-        description: '\nFinTechs in San Francisco with <100 employees that recently raised funding', 
+        description: 'FinTechs in San Francisco with\n<100 employees that recently raised funding', 
         position: { x: centerX, y: centerY }, 
         isStarter: true 
       }
@@ -41,7 +41,7 @@ export default function PlayGroundPage() {
     const newBlock: Block = {
       id: Date.now().toString(),
       title,
-      description: userQuery, // Use the user query as the description
+      description: userQuery, // The new line will be added in the ConnectionBlock component
       position: {
         x: Math.random() * (window.innerWidth - 300) + 150,
         y: Math.random() * (window.innerHeight - 150) + 75
