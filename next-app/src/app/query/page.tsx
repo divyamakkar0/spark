@@ -86,38 +86,27 @@ export default function ModernCompanyDashboard() {
         {renderCompanyTable()}
       </InfiniteGrid>
       <style jsx global>{`
-        @font-face {
-          font-family: 'Geist VF';
-          src: url('/path-to-your-fonts/GeistVF.woff2') format('woff2-variations');
-          font-weight: 100 900;
-          font-stretch: 75% 125%;
-        }
-
-        @font-face {
-          font-family: 'Geist Mono VF';
-          src: url('/path-to-your-fonts/GeistMonoVF.woff2') format('woff2-variations');
-          font-weight: 100 900;
-        }
-
         body {
-          background-color: #f0f2f5;
+          background-color: #fafafa;
+          background-image: radial-gradient(#d3d3d3 1px, transparent 1px);
+          background-size: 20px 20px;
+          font-family: 'Arial', sans-serif;
         }
 
         .dashboard {
-          font-family: 'Geist VF', sans-serif;
           max-width: 1200px;
           margin: 0 auto;
           padding: 20px;
+          text-align: center;
         }
 
         .dashboard-title {
-          font-family: 'Geist VF', sans-serif;
-          font-weight: 700;
-          font-size: 36px;
-          color: #2c3e50;
+          font-family: 'Playfair Display', serif;
+          font-weight: bold;
+          font-size: 96px;
+          color: #333333;
           margin-bottom: 30px;
-          text-align: center;
-          text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+          letter-spacing: -2px;
         }
 
         .table-container {
@@ -142,7 +131,7 @@ export default function ModernCompanyDashboard() {
         .company-table th {
           background-color: #f8f9fa;
           font-weight: 600;
-          color: #34495e;
+          color: #333333;
           text-transform: uppercase;
           font-size: 0.85rem;
           letter-spacing: 0.5px;
@@ -153,27 +142,43 @@ export default function ModernCompanyDashboard() {
         }
 
         .company-table tr:hover {
-          background-color: #f5f5f5;
-          transition: background-color 0.3s ease;
+          background-color: transparent !important;
         }
 
         .company-name {
           font-weight: 600;
-          color: #3498db;
+          color: #333333;
         }
 
         .description {
           max-width: 250px;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          color: #7f8c8d;
+          max-height: 100px;
+          overflow-y: auto;
+          white-space: normal;
+          color: #666666;
+          padding-right: 10px;
+        }
+
+        .description::-webkit-scrollbar {
+          width: 6px;
+        }
+
+        .description::-webkit-scrollbar-track {
+          background: #f1f1f1;
+        }
+
+        .description::-webkit-scrollbar-thumb {
+          background: #888;
+          border-radius: 3px;
+        }
+
+        .description::-webkit-scrollbar-thumb:hover {
+          background: #555;
         }
 
         .badge {
-          font-family: 'Geist Mono VF', monospace;
-          background-color: #e74c3c;
-          color: white;
+          background-color: #f0f0f0;
+          color: #333333;
           padding: 4px 10px;
           border-radius: 20px;
           font-size: 0.85rem;
@@ -183,20 +188,19 @@ export default function ModernCompanyDashboard() {
         }
 
         .funding-amount {
-          font-family: 'Geist Mono VF', monospace;
           font-weight: 600;
-          color: #27ae60;
+          color: #333333;
         }
 
         .website-link {
-          color: #3498db;
+          color: #FF7F50;
           text-decoration: none;
           font-weight: 600;
           transition: color 0.3s ease;
         }
 
         .website-link:hover {
-          color: #2980b9;
+          color: #FF6347;
           text-decoration: underline;
         }
       `}</style>
