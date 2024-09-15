@@ -21,19 +21,6 @@ const ConnectionBlock: React.FC<ConnectionBlockProps> = ({ id, title, position, 
     setDragStart({ x: e.clientX, y: e.clientY });
   };
 
-  const handleGridMove = (e: CustomEvent<{ dx: number; dy: number }>) => {
-    if (!isDragging) {
-      const { dx, dy } = e.detail;
-      const newPosition = {
-        x: position.x + dx,
-        y: position.y + dy
-      };
-      onPositionChange(id, newPosition);
-    }
-  };
-
-  window.addEventListener('gridMove', handleGridMove as EventListener);
-
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (isDragging) {
@@ -52,14 +39,28 @@ const ConnectionBlock: React.FC<ConnectionBlockProps> = ({ id, title, position, 
       setIsDragging(false);
     };
 
+    const handleGridMove = (e: CustomEvent<{ dx: number; dy: number }>) => {
+      if (!isDragging) {
+        const { dx, dy } = e.detail;
+        const newPosition = {
+          x: position.x + dx,
+          y: position.y + dy
+        };
+        onPositionChange(id, newPosition);
+      }
+    };
+
     if (isDragging) {
       window.addEventListener('mousemove', handleMouseMove);
       window.addEventListener('mouseup', handleMouseUp);
     }
 
+    window.addEventListener('gridMove', handleGridMove as EventListener);
+
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('gridMove', handleGridMove as EventListener);
     };
   }, [isDragging, dragStart, onPositionChange, id, zoom, position]);
 
