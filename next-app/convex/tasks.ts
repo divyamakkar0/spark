@@ -38,6 +38,7 @@ export const createNewCompanySearch = mutation({
       linkedin: v.optional(v.object({ value: v.string() })),
       twitter: v.optional(v.object({ value: v.string() })),
       facebook: v.optional(v.object({ value: v.string() })),
+      contact_email: v.optional(v.string()),
       categories: v.optional(v.array(v.object({
         entity_def_id: v.optional(v.string()),
         permalink: v.optional(v.string()),
@@ -101,6 +102,7 @@ export const createNewCompanySearch = mutation({
       if (company.founder_identifiers) companyData.founder_identifiers = company.founder_identifiers;
       if (company.identifier) companyData.identifier = company.identifier;
       if (company.location_identifiers) companyData.location_identifiers = company.location_identifiers;
+      if (company.contact_email) companyData.contact_email = company.contact_email;
 
       if (Object.keys(companyData).length > 0) {
         await ctx.db.insert("companies", companyData);
