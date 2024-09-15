@@ -3,6 +3,7 @@ import React, { useState, useMemo } from "react";
 import { CSSProperties } from "react";
 import { useRouter } from 'next/navigation';
 import MeteoriteEffect from "../components/MeteoriteEffect";
+import Spinner from "../components/Spinner";
 
 const styles: { [key: string]: CSSProperties } = {
   container: {
@@ -105,10 +106,21 @@ const styles: { [key: string]: CSSProperties } = {
   },
 };
 
+
+enum State {
+  IDLE,
+  LOADING,
+  SUCCESS,
+  ERROR,
+}
+
+
 export default function Home() {
 
   const router = useRouter();
   const [query, setQuery] = useState("");
+  const [state, setState] = useState(State.IDLE);
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -116,51 +128,83 @@ export default function Home() {
     router.push('/query');
   };
 
+  const submitQuery = async () => {
+
+    setState(State.LOADING);
+
+    console.log("Submitted query:", query);
+    const params = query;
+    const address = `http://10.39.56.47:4333/get_companies`
+    console.log(address);
+    const response = await fetch(address, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ params }),
+    });
+
+    const data = await response.json();
+    console.log(data);
+
+
+    router.push('/query');
+  };
+
   const memoizedMeteoriteEffect = useMemo(() => <MeteoriteEffect />, []);
 
   return (
     <>
-      <div style={styles.container}>
+      {state === State.LOADING && <Spinner />}
+      {state === State.SUCCESS && <div>Success</div>}
+      {state === State.ERROR && <div>Error</div>}
+      {state === State.IDLE && (
 
-        <main style={styles.main}>
+        <div style={styles.container}>
 
-          <h1 style={styles.title}>
-            <span style={{ fontStyle: 'italic', color: '#FF4500' }}>Spark!</span>
+          <main style={styles.main}>
 
-          </h1>
-          <p style={styles.description}>
-            Ignite your <strong>connections</strong>
-          </p>
-          <div style={styles.buttonContainer}>
-            <form onSubmit={handleSubmit} style={styles.form}>
-              <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Enter your query"
-                style={styles.input}
-              />
-              <button
-                type="submit"
-                style={styles.submitButton}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = '#FF4500';
-                  e.currentTarget.style.color = '#fff';
-                  e.currentTarget.style.borderColor = '#FF4500';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'transparent';
-                  e.currentTarget.style.color = '#000';
-                  e.currentTarget.style.borderColor = '#000';
-                }}
-              >
-                Dive Deeper
-              </button>
-            </form>
-          </div>
-          {memoizedMeteoriteEffect}
-        </main>
-      </div>
+            <h1 style={styles.title}>
+              <span style={{ fontStyle: 'italic', color: '#FF4500' }}>Spark!</span>
+
+            </h1>
+            <p style={styles.description}>
+              Ignite your <strong>connections</strong>
+            </p>
+            <div style={styles.buttonContainer}>
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                submitQuery();
+              }} style={styles.form}>
+                <input
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Enter your query"
+                  style={styles.input}
+                />
+                <button
+                  type="submit"
+                  style={styles.submitButton}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = '#FF4500';
+                    e.currentTarget.style.color = '#fff';
+                    e.currentTarget.style.borderColor = '#FF4500';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.color = '#000';
+                    e.currentTarget.style.borderColor = '#000';
+                  }}
+                >
+                  Dive Deeper
+                </button>
+              </form>
+            </div>
+            {memoizedMeteoriteEffect}
+          </main>
+        </div>
+      )}
     </>
   );
 }
