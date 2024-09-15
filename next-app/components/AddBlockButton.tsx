@@ -1,15 +1,21 @@
 import React, { useState } from 'react';
 
-const AddBlockButton: React.FC = () => {
+interface AddBlockButtonProps {
+  onAddBlock: (title: string) => void;
+}
+
+const AddBlockButton: React.FC<AddBlockButtonProps> = ({ onAddBlock }) => {
   const [showForm, setShowForm] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
   const [subCategory, setSubCategory] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Add your submit logic here
-    console.log('Form submitted');
-    setShowForm(false);
+    if (selectedOption) {
+      onAddBlock(selectedOption);
+      setSelectedOption('');
+      setShowForm(false);
+    }
   };
 
   const renderInputField = () => {
