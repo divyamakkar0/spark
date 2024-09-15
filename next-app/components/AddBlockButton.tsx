@@ -2,12 +2,78 @@ import React, { useState } from 'react';
 
 const AddBlockButton: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
+  const [selectedOption, setSelectedOption] = useState('');
+  const [subCategory, setSubCategory] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Add your submit logic here
     console.log('Form submitted');
     setShowForm(false);
+  };
+
+  const renderInputField = () => {
+    switch (selectedOption) {
+      case 'Add Category':
+        return (
+          <select
+            value={subCategory}
+            onChange={(e) => setSubCategory(e.target.value)}
+            style={{
+              marginBottom: '15px',
+              width: '100%',
+              padding: '10px',
+              borderRadius: '8px',
+              border: '1px solid #FFE0B2',
+              fontSize: '14px',
+              color: '#333',
+              backgroundColor: '#FFF3E0',
+            }}
+          >
+            <option value="">Select a category</option>
+            {[...Array(10)].map((_, i) => (
+              <option key={i + 1} value={`Category ${i + 1}`}>
+                Category {i + 1}
+              </option>
+            ))}
+          </select>
+        );
+      case 'Add Resume':
+        return (
+          <input
+            type="file"
+            accept=".pdf,.doc,.docx"
+            style={{
+              marginBottom: '15px',
+              width: '100%',
+              padding: '10px',
+              borderRadius: '8px',
+              border: '1px solid #FFE0B2',
+              fontSize: '14px',
+              color: '#333',
+              backgroundColor: '#FFF3E0',
+            }}
+          />
+        );
+      default:
+        return (
+          <textarea
+            style={{
+              marginBottom: '15px',
+              width: '100%',
+              minHeight: '120px',
+              padding: '10px',
+              borderRadius: '8px',
+              border: '1px solid #FFE0B2',
+              fontSize: '14px',
+              color: '#333',
+              resize: 'vertical',
+              backgroundColor: '#FFF3E0',
+            }}
+            placeholder="Enter text here"
+          />
+        );
+    }
   };
 
   return (
@@ -52,6 +118,8 @@ const AddBlockButton: React.FC = () => {
         >
           <form onSubmit={handleSubmit}>
             <select 
+              value={selectedOption}
+              onChange={(e) => setSelectedOption(e.target.value)}
               style={{
                 marginBottom: '15px',
                 width: '100%',
@@ -63,26 +131,15 @@ const AddBlockButton: React.FC = () => {
                 backgroundColor: '#FFF3E0',
               }}
             >
-              <option value="">Select an option</option>
-              <option value="option1">Option 1</option>
-              <option value="option2">Option 2</option>
-              <option value="option3">Option 3</option>
+              <option value="" disabled style={{ color: '#999' }}>Select a block type...</option>
+              <option value="Add Category">Category</option>
+              <option value="Web Search">Web Search</option>
+              <option value="Find Employees">Find Employees</option>
+              <option value="Outreach">Outreach</option>
+              <option value="Add Resume">Resume</option>
+
             </select>
-            <textarea
-              style={{
-                marginBottom: '15px',
-                width: '100%',
-                minHeight: '120px',
-                padding: '10px',
-                borderRadius: '8px',
-                border: '1px solid #FFE0B2',
-                fontSize: '14px',
-                color: '#333',
-                resize: 'vertical',
-                backgroundColor: '#FFF3E0',
-              }}
-              placeholder="Enter text here"
-            />
+            {renderInputField()}
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <button
                 type="button"
