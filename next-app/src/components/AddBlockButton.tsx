@@ -99,6 +99,7 @@ const AddBlockButton: React.FC<AddBlockButtonProps> = ({ onAddBlock }) => {
             border: '1px solid #FFE0B2',
             fontSize: '14px',
             resize: 'vertical',
+            boxSizing: 'border-box', // Add this line
           }}
           required
         />
