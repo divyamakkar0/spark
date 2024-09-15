@@ -3,6 +3,7 @@ import React, { useState, useMemo } from "react";
 import { CSSProperties } from "react";
 import { useRouter } from 'next/navigation';
 import MeteoriteEffect from "../components/MeteoriteEffect";
+import TypewriterEffect from "../components/TypewriterEffect";
 
 const styles: { [key: string]: CSSProperties } = {
   container: {
@@ -42,16 +43,16 @@ const styles: { [key: string]: CSSProperties } = {
     zIndex: 1,
   },
   title: {
-    fontSize: "84px",
+    fontSize: "96px", // Increased back to 96px
     marginBottom: "30px",
     fontFamily: '"Playfair Display", serif',
     fontWeight: "bold",
     letterSpacing: "-2px",
   },
   description: {
-    fontSize: "24px",
+    fontSize: "28px",
     lineHeight: "1.6",
-    marginBottom: "40px",
+    marginBottom: "60px", // Increased from 40px
   },
   buttonContainer: {
     display: "flex",
@@ -60,7 +61,7 @@ const styles: { [key: string]: CSSProperties } = {
   },
   button: {
     padding: "15px 30px",
-    border: "2px solid #000",
+    border: "2px solid #333333",
     borderRadius: "30px",
     background: "none",
     cursor: "pointer",
@@ -69,7 +70,7 @@ const styles: { [key: string]: CSSProperties } = {
     transition: "all 0.3s ease",
   },
   primaryButton: {
-    backgroundColor: "#000",
+    backgroundColor: "#333333",
     color: "#fff",
   },
   form: {
@@ -81,27 +82,41 @@ const styles: { [key: string]: CSSProperties } = {
     maxWidth: '500px',
   },
   input: {
-    padding: '15px 25px',
-    border: '2px solid #000',
+    padding: '10px 20px',
+    border: '2px solid #333333',
     borderRadius: '50px',
-    fontSize: '18px',
+    fontSize: '20px',
     width: '100%',
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
     transition: 'all 0.3s ease',
+    textAlign: 'center',
+    outline: 'none',
+  },
+  inputActive: {
+    borderColor: '#FF7F50',
   },
   submitButton: {
-    padding: '15px 30px',
-    border: '2px solid #000', // Black border
+    padding: '12px 24px', // Reduced padding
+    border: '2px solid #000',
     borderRadius: '50px',
-    background: 'transparent', // Transparent background
-    color: '#000', // Black text
+    background: 'transparent',
+    color: '#000',
     cursor: 'pointer',
-    fontSize: '18px',
+    fontSize: '16px', // Reduced from 18px
     fontWeight: 'bold',
     transition: 'all 0.3s ease',
-    width: '100%',
+    width: '80%', // Reduced from 100%
     textTransform: 'uppercase',
     letterSpacing: '2px',
+  },
+  logo: {
+    position: "absolute",
+    top: "20px",
+    left: "20px",
+    fontSize: "36px", // Slightly increased from 32px
+    fontWeight: "bold",
+    color: "#333333",
+    fontFamily: '"Playfair Display", serif',
   },
 };
 
@@ -121,15 +136,14 @@ export default function Home() {
   return (
     <>
       <div style={styles.container}>
-
+        <div style={styles.logo}>Spark</div>
         <main style={styles.main}>
-
           <h1 style={styles.title}>
-            <span style={{ fontStyle: 'italic', color: '#FF4500' }}>Spark!</span>
-
+            <span style={{ fontStyle: 'italic', color: '#FF7F50' }}>Spark! </span>
+            <TypewriterEffect />
           </h1>
           <p style={styles.description}>
-            Ignite your <strong>connections</strong>
+            Web <em>research</em> and <em>outreach</em> tool for <strong>startups</strong>
           </p>
           <div style={styles.buttonContainer}>
             <form onSubmit={handleSubmit} style={styles.form}>
@@ -138,15 +152,18 @@ export default function Home() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Enter your query"
-                style={styles.input}
+                style={{
+                  ...styles.input,
+                  ...(query ? styles.inputActive : {}),
+                }}
               />
               <button
                 type="submit"
                 style={styles.submitButton}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = '#FF4500';
+                  e.currentTarget.style.background = '#FF7F50';
                   e.currentTarget.style.color = '#fff';
-                  e.currentTarget.style.borderColor = '#FF4500';
+                  e.currentTarget.style.borderColor = '#FF7F50';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.background = 'transparent';
