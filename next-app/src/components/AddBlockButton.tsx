@@ -8,7 +8,7 @@ const AddBlockButton: React.FC<AddBlockButtonProps> = ({ onAddBlock }) => {
   const [showForm, setShowForm] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
   const [userQuery, setUserQuery] = useState('');
-  const [categoryNumber, setCategoryNumber] = useState('');
+  const [categoryValue, setCategoryValue] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -16,7 +16,7 @@ const AddBlockButton: React.FC<AddBlockButtonProps> = ({ onAddBlock }) => {
     if (selectedOption) {
       let submitValue: string | number | File = userQuery;
       if (selectedOption === 'Category') {
-        submitValue = parseInt(categoryNumber);
+        submitValue = categoryValue;
       } else if (selectedOption === 'Resume' && fileInputRef.current?.files?.[0]) {
         submitValue = fileInputRef.current.files[0];
       }
@@ -24,7 +24,7 @@ const AddBlockButton: React.FC<AddBlockButtonProps> = ({ onAddBlock }) => {
       setShowForm(false);
       setSelectedOption('');
       setUserQuery('');
-      setCategoryNumber('');
+      setCategoryValue('');
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
@@ -46,8 +46,8 @@ const AddBlockButton: React.FC<AddBlockButtonProps> = ({ onAddBlock }) => {
     if (selectedOption === 'Category') {
       return (
         <select
-          value={categoryNumber}
-          onChange={(e) => setCategoryNumber(e.target.value)}
+          value={categoryValue}
+          onChange={(e) => setCategoryValue(e.target.value)}
           style={{
             marginBottom: '15px',
             width: '100%',
@@ -61,9 +61,9 @@ const AddBlockButton: React.FC<AddBlockButtonProps> = ({ onAddBlock }) => {
           required
         >
           <option value="" disabled>Select a category...</option>
-          {[...Array(10)].map((_, i) => (
-            <option key={i + 1} value={i + 1}>{i + 1}</option>
-          ))}
+          <option value="linkedin_url">LinkedIn</option>
+          <option value="founder_identifiers">Founders</option>
+          <option value="categories">Categories</option>
         </select>
       );
     } else if (selectedOption === 'Resume') {
@@ -71,6 +71,7 @@ const AddBlockButton: React.FC<AddBlockButtonProps> = ({ onAddBlock }) => {
         <input
           type="file"
           ref={fileInputRef}
+          accept=".pdf,.doc,.docx"
           style={{
             marginBottom: '15px',
             width: '100%',
@@ -99,7 +100,7 @@ const AddBlockButton: React.FC<AddBlockButtonProps> = ({ onAddBlock }) => {
             border: '1px solid #FFE0B2',
             fontSize: '14px',
             resize: 'vertical',
-            boxSizing: 'border-box', // Add this line
+            boxSizing: 'border-box',
           }}
           required
         />
@@ -149,7 +150,7 @@ const AddBlockButton: React.FC<AddBlockButtonProps> = ({ onAddBlock }) => {
           }}
         >
           <form onSubmit={handleSubmit}>
-            <select 
+            <select
               value={selectedOption}
               onChange={(e) => setSelectedOption(e.target.value)}
               style={{

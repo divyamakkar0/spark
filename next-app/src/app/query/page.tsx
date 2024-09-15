@@ -1,10 +1,12 @@
 "use client";
 import React, { useMemo } from 'react';
 import InfiniteGrid from "../../components/InfiniteGrid";
+import { useState } from 'react';
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
+import Link from 'next/link';
 
 function convertEnumToRange(enumString: string) {
   if (!enumString) return 'N/A';
@@ -34,8 +36,56 @@ function formatString(str: string) {
 
 export default function ModernCompanyDashboard() {
   const companies = useQuery(api.tasks.get);
+  console.log(companies);
+  const [bool_val, setBoolVal] = useState(false);
+
+  React.useEffect(() => {
+    if (companies) {
+      for (const company of companies) {
+        if (company.bool_val) {
+          setBoolVal(true);
+          break;
+        }
+
+      }
+    }
+  }, [companies]);
   const searchParams = useSearchParams();
   const query = searchParams.get('query') || 'Company Dashboard';
+
+  const [currentPage, setCurrentPage] = useState('query');
+
+  const togglePage = () => {
+    setCurrentPage(currentPage === 'query' ? 'playground' : 'query');
+  };
+
+
+
+  const toggleDotStyle = {
+    position: 'absolute' as const,
+    top: '3px',
+    left: currentPage === 'query' ? '3px' : '33px',
+    width: '24px',
+    height: '24px',
+    backgroundColor: 'rgba(255, 165, 0, 0.6)', // More transparent
+    borderRadius: '50%',
+    transition: 'left 0.3s',
+  };
+
+
+  const toggleContainerStyle = {
+    position: 'fixed' as const,
+    top: '20px',
+    right: '20px',
+    width: '60px',
+    height: '30px',
+    backgroundColor: 'rgba(255, 165, 0, 0.1)', // More transparent
+    borderRadius: '15px',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s',
+    zIndex: 1000,
+  };
+
 
   const memoizedCompanyTable = useMemo(() => {
     if (!companies) return null;
@@ -53,6 +103,10 @@ export default function ModernCompanyDashboard() {
                 <th>Employees</th>
                 <th>Location</th>
                 <th>Website</th>
+
+                {bool_val && <th>Contact</th>}
+                {bool_val && <th>Message</th>}
+
               </tr>
             </thead>
             <tbody>
@@ -88,6 +142,10 @@ export default function ModernCompanyDashboard() {
                       </a>
                     ) : 'N/A'}
                   </td>
+
+                  {bool_val && <td>{company.contact}</td>}
+                  {bool_val && <td>{company.message}</td>}
+
                 </tr>
               ))}
             </tbody>
@@ -99,6 +157,16 @@ export default function ModernCompanyDashboard() {
 
   return (
     <>
+    <Link href={currentPage === 'query' ? '/playground' : '/query'}>
+        <div
+          onClick={togglePage}
+          style={toggleContainerStyle}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 165, 0, 0.3)'} // More transparent on hover
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 165, 0, 0.1)'}
+        >
+          <div style={toggleDotStyle} />
+        </div>
+      </Link>
       <InfiniteGrid>
         {memoizedCompanyTable}
       </InfiniteGrid>

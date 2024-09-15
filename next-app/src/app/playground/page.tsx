@@ -3,7 +3,10 @@ import React, { useState, useEffect } from "react";
 import InfiniteGrid from "../../components/infiniteGrid2";
 import AddBlockButton from "../../components/AddBlockButton";
 import ConnectionBlock from "../../components/ConnectionBlock";
-
+import { useMutation, useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 interface Block {
   id: string;
   title: string;
@@ -19,6 +22,8 @@ interface Connection {
 }
 
 export default function PlayGroundPage() {
+  const router = useRouter();
+  const companies = useQuery(api.tasks.get);
   const [blocks, setBlocks] = useState<Block[]>([]);
   const [connections, setConnections] = useState<Connection[]>([]);
   const [activeConnection, setActiveConnection] = useState<{
@@ -44,11 +49,74 @@ export default function PlayGroundPage() {
     ]);
   }, []);
 
-  const addBlock = (title: string, userQuery: string) => {
+  const [currentPage, setCurrentPage] = useState('playground');
+
+  // Add these Convex mutations
+  const processCategoryBlock = useMutation(api.tasks.addCategories);
+  // const processCompanyBlock = useMutation(api.blocks.processCompanyBlock);
+  // const processProductBlock = useMutation(api.blocks.processProductBlock);
+
+  const togglePage = async () => {
+    const newPage = currentPage === 'query' ? 'playground' : 'query';
+
+    console.log("Submitted query:");
+    const params = { company_ids: companies?.slice(0, 25).map(company => company._id) || [] };
+    const address = `http://10.39.65.191:4333/get_info`
+    console.log(address);
+    console.log(params);
+    const response = await fetch(address, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ params }),
+    });
+
+    let data = await response.json();
+    data = data.data
+    console.log(data);
+    // createNewCompanySearch({data: data});
+    // resetCategories();
+
+    router.push('/query');
+  };
+
+  const toggleDotStyle = {
+    position: 'absolute' as const,
+    top: '3px',
+    left: currentPage === 'query' ? '3px' : '33px',
+    width: '24px',
+    height: '24px',
+    backgroundColor: 'rgba(255, 165, 0, 0.6)', // More transparent
+    borderRadius: '50%',
+    transition: 'left 0.3s',
+  };
+
+
+  const toggleContainerStyle = {
+    position: 'fixed' as const,
+    top: '20px',
+    right: '20px',
+    width: '60px',
+    height: '30px',
+    backgroundColor: 'rgba(255, 165, 0, 0.1)', // More transparent
+    borderRadius: '15px',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s',
+    zIndex: 1000,
+  };
+
+  const addBlock = (title: string, userQuery: string | number | File) => {
+    let description = typeof userQuery === 'string' ? userQuery : 'File uploaded';
+    if (title === 'Category') {
+      description = `${userQuery}`;
+    } else if (title === 'Resume') {
+      description = `Resume file: ${(userQuery as File).name}`;
+    }
     const newBlock: Block = {
       id: Date.now().toString(),
       title,
-      description: userQuery,
+      description,
       position: {
         x: Math.random() * (window.innerWidth - 300) + 150,
         y: Math.random() * (window.innerHeight - 150) + 75,
@@ -184,6 +252,16 @@ export default function PlayGroundPage() {
       style={{ width: "100vw", height: "100vh", overflow: "hidden" }}
       onMouseMove={handleMouseMove}
     >
+      <Link href={currentPage === 'query' ? '/playground' : '/query'}>
+        <div
+          onClick={togglePage}
+          style={toggleContainerStyle}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 165, 0, 0.3)'} // More transparent on hover
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 165, 0, 0.1)'}
+        >
+          <div style={toggleDotStyle} />
+        </div>
+      </Link>
       <InfiniteGrid>
         {({ zoom, gridOffset }) => (
           <>
