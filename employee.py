@@ -17,7 +17,7 @@ def findEmployee(link):
     # if response.status_code == 200:
     #     url = response.json()['employees'][0]['profile_url']
     #     id = url.rstrip('/').split('/')[-1]
-    #     api = Linkedin("divyamakkar000@gmail.com", "dm707485!")
+    #     
     #     profile = api.get_profile(id)
     #     contact_info = api.get_profile_contact_info(id)
     #     message = "message"
