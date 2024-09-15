@@ -98,8 +98,8 @@ export default function PlayGroundPage() {
 
   const getConnectionPosition = (block: Block, position: 'top' | 'right' | 'bottom' | 'left') => {
     const { x, y } = block.position;
-    const width = 200; // Assuming block width
-    const height = 100; // Assuming block height
+    const width = 300; // Max width of the block
+    const height = 150; // Approximate height, adjust as needed
 
     switch (position) {
       case 'top':

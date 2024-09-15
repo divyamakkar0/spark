@@ -9,13 +9,13 @@ const Connection: React.FC<ConnectionProps> = ({ position, onConnectionClick }) 
   const getPosition = () => {
     switch (position) {
       case 'top':
-        return { top: '-5px', left: '50%', transform: 'translateX(-50%)' };
+        return { top: '0', left: '50%', transform: 'translate(-50%, -50%)' };
       case 'right':
-        return { top: '50%', right: '-5px', transform: 'translateY(-50%)' };
+        return { top: '50%', right: '0', transform: 'translate(50%, -50%)' };
       case 'bottom':
-        return { bottom: '-5px', left: '50%', transform: 'translateX(-50%)' };
+        return { bottom: '0', left: '50%', transform: 'translate(-50%, 50%)' };
       case 'left':
-        return { top: '50%', left: '-5px', transform: 'translateY(-50%)' };
+        return { top: '50%', left: '0', transform: 'translate(-50%, -50%)' };
     }
   };
 
@@ -23,9 +23,8 @@ const Connection: React.FC<ConnectionProps> = ({ position, onConnectionClick }) 
     <div
       style={{
         position: 'absolute',
-        width: '10px',
-        height: '10px',
-        borderRadius: '50%',
+        width: '12px',
+        height: '12px',
         backgroundColor: 'rgba(255, 165, 0, 0.3)',
         cursor: 'pointer',
         ...getPosition(),
