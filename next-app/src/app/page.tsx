@@ -4,6 +4,10 @@ import { CSSProperties } from "react";
 import { useRouter } from 'next/navigation';
 import MeteoriteEffect from "../components/MeteoriteEffect";
 import TypewriterEffect from "../components/TypewriterEffect";
+import Spinner from "../components/Spinner";
+import { useMutation } from "convex/react";
+import { api } from "../../convex/_generated/api";
+
 
 const styles: { [key: string]: CSSProperties } = {
   container: {
@@ -120,14 +124,44 @@ const styles: { [key: string]: CSSProperties } = {
   },
 };
 
+
+enum State {
+  IDLE,
+  LOADING,
+  SUCCESS,
+  ERROR,
+}
+
+
 export default function Home() {
 
   const router = useRouter();
   const [query, setQuery] = useState("");
+  const [state, setState] = useState(State.IDLE);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const createNewCompanySearch = useMutation(api.tasks.createNewCompanySearch);
+
+  const submitQuery = async () => {
+    setState(State.LOADING);
+
     console.log("Submitted query:", query);
+    const params = query;
+    const address = `http://10.39.65.191:4333/get_companies`
+    console.log(address);
+    const response = await fetch(address, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ params }),
+    });
+
+    let data = await response.json();
+    data = data.data
+    console.log(data);
+    createNewCompanySearch({data: data});
+
+    setState(State.SUCCESS);
     router.push('/query');
   };
 
@@ -135,7 +169,12 @@ export default function Home() {
 
   return (
     <>
-      <div style={styles.container}>
+      {state === State.LOADING && <Spinner />}
+      {state === State.SUCCESS && <div>Success</div>}
+      {state === State.ERROR && <div>Error</div>}
+      {state === State.IDLE && (
+
+       <div style={styles.container}>
         <div style={styles.logo}>Spark</div>
         <main style={styles.main}>
           <h1 style={styles.title}>
@@ -146,7 +185,7 @@ export default function Home() {
             Web <em>research</em> and <em>outreach</em> tool for <strong>startups</strong>
           </p>
           <div style={styles.buttonContainer}>
-            <form onSubmit={handleSubmit} style={styles.form}>
+            <form onSubmit={submitQuery} style={styles.form}>
               <input
                 type="text"
                 value={query}
@@ -178,6 +217,9 @@ export default function Home() {
           {memoizedMeteoriteEffect}
         </main>
       </div>
+
+        
+      )}
     </>
   );
 }
