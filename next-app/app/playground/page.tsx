@@ -41,7 +41,7 @@ export default function PlayGroundPage() {
   };
 
   return (
-    <>
+    <div style={{ width: '100vw', height: '100vh', overflow: 'hidden' }}>
       <InfiniteGrid>
         {({ zoom, gridOffset }) => (
           <>
@@ -61,6 +61,6 @@ export default function PlayGroundPage() {
         )}
       </InfiniteGrid>
       <AddBlockButton onAddBlock={addBlock} />
-    </>
+    </div>
   );
 }
