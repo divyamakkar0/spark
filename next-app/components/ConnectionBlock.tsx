@@ -39,32 +39,19 @@ const ConnectionBlock: React.FC<ConnectionBlockProps> = ({ id, title, position, 
       setIsDragging(false);
     };
 
-    const handleGridMove = (e: CustomEvent<{ dx: number; dy: number }>) => {
-      if (!isDragging) {
-        const { dx, dy } = e.detail;
-        const newPosition = {
-          x: position.x + dx,
-          y: position.y + dy
-        };
-        onPositionChange(id, newPosition);
-      }
-    };
-
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
-    window.addEventListener('gridMove', handleGridMove as EventListener);
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
-      window.removeEventListener('gridMove', handleGridMove as EventListener);
     };
   }, [isDragging, dragStart, onPositionChange, id, zoom, position]);
 
   const blockStyle = {
     position: 'absolute',
-    left: `${position.x * zoom}px`,
-    top: `${position.y * zoom}px`,
+    left: `${position.x}px`,
+    top: `${position.y}px`,
     padding: isStarter ? '20px 40px' : '10px',
     backgroundColor: '#fff',
     border: '1px solid #FFE0B2',
@@ -74,7 +61,7 @@ const ConnectionBlock: React.FC<ConnectionBlockProps> = ({ id, title, position, 
     fontSize: isStarter ? '24px' : '16px',
     fontWeight: isStarter ? 'bold' : 'normal',
     userSelect: 'none',
-    transform: `scale(${zoom}) translate(${-gridOffset.x}px, ${-gridOffset.y}px)`,
+    transform: `scale(${zoom})`,
     transformOrigin: 'top left',
   };
 
