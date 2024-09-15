@@ -1,6 +1,6 @@
 "use client";
 import React from 'react';
-import InfiniteGrid from "@/components/infiniteGrid";
+import InfiniteGrid from "../../components/infiniteGrid";
 
 export default function QueryPage() {
   return (

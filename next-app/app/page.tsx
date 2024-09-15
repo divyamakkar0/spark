@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useMemo } from "react";
 import { CSSProperties } from "react";
-import MeteoriteEffect from "@/components/me";
+import MeteoriteEffect from "../components/me";
 import { useRouter } from 'next/navigation';
 
 
