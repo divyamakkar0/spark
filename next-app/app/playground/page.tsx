@@ -10,6 +10,7 @@ interface Block {
   position: { x: number; y: number };
   isStarter?: boolean;
 }
+// hello
 
 export default function PlayGroundPage() {
   const [blocks, setBlocks] = useState<Block[]>([]);
