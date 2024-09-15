@@ -27,15 +27,21 @@ export default function PlayGroundPage() {
     const centerX = window.innerWidth / 2 - 150;
     const centerY = window.innerHeight / 2 - 75;
     setBlocks([
-      { id: '1', title: 'Query', description: 'Enter your query here', position: { x: centerX, y: centerY }, isStarter: true }
+      { 
+        id: '1', 
+        title: 'Company Description', 
+        description: '\nFinTechs in San Francisco with <100 employees that recently raised funding', 
+        position: { x: centerX, y: centerY }, 
+        isStarter: true 
+      }
     ]);
   }, []);
 
-  const addBlock = (title: string) => {
+  const addBlock = (title: string, userQuery: string) => {
     const newBlock: Block = {
       id: Date.now().toString(),
       title,
-      description: '', // This will be updated with the user query later
+      description: userQuery, // Use the user query as the description
       position: {
         x: Math.random() * (window.innerWidth - 300) + 150,
         y: Math.random() * (window.innerHeight - 150) + 75

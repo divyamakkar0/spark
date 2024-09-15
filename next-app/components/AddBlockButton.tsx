@@ -1,84 +1,21 @@
 import React, { useState } from 'react';
 
 interface AddBlockButtonProps {
-  onAddBlock: (title: string) => void;
+  onAddBlock: (title: string, userQuery: string) => void;
 }
 
 const AddBlockButton: React.FC<AddBlockButtonProps> = ({ onAddBlock }) => {
   const [showForm, setShowForm] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
-  const [subCategory, setSubCategory] = useState('');
+  const [userQuery, setUserQuery] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedOption) {
-      onAddBlock(selectedOption);
-      setSelectedOption('');
+      onAddBlock(selectedOption, userQuery);
       setShowForm(false);
-    }
-  };
-
-  const renderInputField = () => {
-    switch (selectedOption) {
-      case 'Add Category':
-        return (
-          <select
-            value={subCategory}
-            onChange={(e) => setSubCategory(e.target.value)}
-            style={{
-              marginBottom: '15px',
-              width: '100%',
-              padding: '10px',
-              borderRadius: '8px',
-              border: '1px solid #FFE0B2',
-              fontSize: '14px',
-              color: '#333',
-              backgroundColor: '#FFF3E0',
-            }}
-          >
-            <option value="">Select a category</option>
-            {[...Array(10)].map((_, i) => (
-              <option key={i + 1} value={`Category ${i + 1}`}>
-                Category {i + 1}
-              </option>
-            ))}
-          </select>
-        );
-      case 'Add Resume':
-        return (
-          <input
-            type="file"
-            accept=".pdf,.doc,.docx"
-            style={{
-              marginBottom: '15px',
-              width: '100%',
-              padding: '10px',
-              borderRadius: '8px',
-              border: '1px solid #FFE0B2',
-              fontSize: '14px',
-              color: '#333',
-              backgroundColor: '#FFF3E0',
-            }}
-          />
-        );
-      default:
-        return (
-          <textarea
-            style={{
-              marginBottom: '15px',
-              width: '100%',
-              minHeight: '120px',
-              padding: '10px',
-              borderRadius: '8px',
-              border: '1px solid #FFE0B2',
-              fontSize: '14px',
-              color: '#333',
-              resize: 'vertical',
-              backgroundColor: '#FFF3E0',
-            }}
-            placeholder="Enter text here"
-          />
-        );
+      setSelectedOption('');
+      setUserQuery('');
     }
   };
 
@@ -145,7 +82,21 @@ const AddBlockButton: React.FC<AddBlockButtonProps> = ({ onAddBlock }) => {
               <option value="Add Resume">Resume</option>
 
             </select>
-            {renderInputField()}
+            <textarea
+              value={userQuery}
+              onChange={(e) => setUserQuery(e.target.value)}
+              placeholder="Enter your query..."
+              style={{
+                width: '100%',
+                minHeight: '100px',
+                marginBottom: '15px',
+                padding: '10px',
+                borderRadius: '8px',
+                border: '1px solid #FFE0B2',
+                fontSize: '14px',
+                resize: 'vertical',
+              }}
+            />
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <button
                 type="button"

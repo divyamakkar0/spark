@@ -85,15 +85,16 @@ const ConnectionBlock: React.FC<ConnectionBlockProps> = ({
   };
 
   const descriptionStyle: React.CSSProperties = {
-    fontSize: '16px',
+    fontSize: '14px',
     marginTop: '10px',
     whiteSpace: 'pre-wrap',
+    lineHeight: '1.5',
   };
 
   return (
     <div ref={blockRef} style={blockStyle} onMouseDown={handleMouseDown} className="connection-block">
       <div style={titleStyle}>{title}</div>
-      {!isStarter && <div style={descriptionStyle}>{description}</div>}
+      <div style={descriptionStyle}>{description}</div>
       <Connection position="top" onConnectionClick={() => onConnectionClick(id, 'top')} />
       <Connection position="right" onConnectionClick={() => onConnectionClick(id, 'right')} />
       <Connection position="bottom" onConnectionClick={() => onConnectionClick(id, 'bottom')} />
