@@ -4,6 +4,8 @@ import { CSSProperties } from "react";
 import { useRouter } from 'next/navigation';
 import MeteoriteEffect from "../components/MeteoriteEffect";
 import Spinner from "../components/Spinner";
+import { useMutation } from "convex/react";
+import { api } from "../../convex/_generated/api";
 
 const styles: { [key: string]: CSSProperties } = {
   container: {
@@ -121,20 +123,14 @@ export default function Home() {
   const [query, setQuery] = useState("");
   const [state, setState] = useState(State.IDLE);
 
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Submitted query:", query);
-    router.push('/query');
-  };
+  const createNewCompanySearch = useMutation(api.tasks.createNewCompanySearch);
 
   const submitQuery = async () => {
-
     setState(State.LOADING);
 
     console.log("Submitted query:", query);
     const params = query;
-    const address = `http://10.39.56.47:4333/get_companies`
+    const address = `http://10.39.65.191:4333/get_companies`
     console.log(address);
     const response = await fetch(address, {
       method: 'POST',
@@ -144,10 +140,12 @@ export default function Home() {
       body: JSON.stringify({ params }),
     });
 
-    const data = await response.json();
+    let data = await response.json();
+    data = data.data
     console.log(data);
+    createNewCompanySearch({data: data});
 
-
+    setState(State.SUCCESS);
     router.push('/query');
   };
 
