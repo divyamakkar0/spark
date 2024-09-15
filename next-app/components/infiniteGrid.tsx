@@ -55,8 +55,8 @@ const InfiniteGrid: React.FC<InfiniteGridProps> = ({ children }) => {
     <>
       <div style={{ 
         position: 'relative', 
-        width: '100vw', 
-        height: '100vh', 
+        width: '1000vw', 
+        height: '1000vh', 
         overflow: 'hidden',
       }}>
         <div
@@ -69,7 +69,6 @@ const InfiniteGrid: React.FC<InfiniteGridProps> = ({ children }) => {
             height: '100%',
             cursor: isDragging ? 'grabbing' : 'grab',
             background: '#fafafa',
-            backgroundImage: 'radial-gradient(#d3d3d3 1px, transparent 1px)',
             backgroundSize: `${20 * zoom}px ${20 * zoom}px`,
             transform: `scale(${zoom}) translate(${offsetX}px, ${offsetY}px)`,
             transformOrigin: '0 0',
