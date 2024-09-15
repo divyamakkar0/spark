@@ -1,10 +1,12 @@
 "use client";
-import React from 'react';
+import React, { useMemo } from 'react';
 import InfiniteGrid from "../../components/InfiniteGrid";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
+import { useSearchParams } from 'next/navigation';
+import Image from 'next/image';
 
-function convertEnumToRange(enumString) {
+function convertEnumToRange(enumString: string) {
   if (!enumString) return 'N/A';
   if (enumString.startsWith('c_')) {
     enumString = enumString.slice(2);
@@ -22,7 +24,7 @@ function convertEnumToRange(enumString) {
   }
 }
 
-function formatString(str) {
+function formatString(str: string) {
   if (!str) return 'N/A';
   return str
     .split('_')
@@ -32,12 +34,14 @@ function formatString(str) {
 
 export default function ModernCompanyDashboard() {
   const companies = useQuery(api.tasks.get);
+  const searchParams = useSearchParams();
+  const query = searchParams.get('query') || 'Company Dashboard';
 
-  const renderCompanyTable = () => {
+  const memoizedCompanyTable = useMemo(() => {
     if (!companies) return null;
     return (
       <div className="dashboard">
-        <h1 className="dashboard-title">Company Dashboard</h1>
+        <h1 className="dashboard-title">{query}</h1>
         <div className="table-container">
           <table className="company-table">
             <thead>
@@ -54,7 +58,20 @@ export default function ModernCompanyDashboard() {
             <tbody>
               {companies.map((company, index) => (
                 <tr key={index}>
-                  <td className="company-name">{company.name}</td>
+                  <td className="company-name">
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      {company.identifier.permalink && (
+                        <img
+                          src={`https://images.crunchbase.com/image/upload/c_pad,h_170,w_170,f_auto,b_white,q_auto:eco,dpr_2/${company.identifier.image_id}`}
+                          alt={`${company.name} logo`}
+                          width={30}
+                          height={30}
+                          style={{ marginRight: '20px', objectFit: 'contain' }}
+                        />
+                      )}
+                      {company.name}
+                    </div>
+                  </td>
                   <td className="description">{company.short_description || 'N/A'}</td>
                   <td><span className="badge">{formatString(company.last_funding_type)}</span></td>
                   <td className="funding-amount">
@@ -78,12 +95,12 @@ export default function ModernCompanyDashboard() {
         </div>
       </div>
     );
-  };
+  }, [companies, query]);
 
   return (
     <>
       <InfiniteGrid>
-        {renderCompanyTable()}
+        {memoizedCompanyTable}
       </InfiniteGrid>
       <style jsx global>{`
         body {
@@ -103,10 +120,15 @@ export default function ModernCompanyDashboard() {
         .dashboard-title {
           font-family: 'Playfair Display', serif;
           font-weight: bold;
-          font-size: 96px;
+          font-size: 72px;
           color: #333333;
           margin-bottom: 30px;
           letter-spacing: -2px;
+          user-select: none;
+          max-width: 1000px;
+          margin-left: auto;
+          margin-right: auto;
+          word-wrap: break-word;
         }
 
         .table-container {
@@ -114,6 +136,7 @@ export default function ModernCompanyDashboard() {
           background: white;
           border-radius: 12px;
           box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+          user-select: none;
         }
 
         .company-table {
@@ -141,8 +164,12 @@ export default function ModernCompanyDashboard() {
           border-bottom: none;
         }
 
+        .company-table tr {
+          transition: background-color 0.3s ease;
+        }
+
         .company-table tr:hover {
-          background-color: transparent !important;
+          background-color: rgba(0, 0, 0, 0.02) !important;
         }
 
         .company-name {

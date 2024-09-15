@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 
 interface InfiniteGridProps {
   children: React.ReactNode;
@@ -6,94 +6,115 @@ interface InfiniteGridProps {
 
 const InfiniteGrid: React.FC<InfiniteGridProps> = ({ children }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const [zoom, setZoom] = useState(1);
-  const [offsetX, setOffsetX] = useState(0);
-  const [offsetY, setOffsetY] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [startY, setStartY] = useState(0);
+  const contentRef = useRef<HTMLDivElement | null>(null);
+  const isDragging = useRef(false);
+  const lastMousePosition = useRef({ x: 0, y: 0 });
+  const transform = useRef({ x: 0, y: 0, scale: 1 });
+
+  const updateTransform = useCallback(() => {
+    if (contentRef.current) {
+      const { x, y, scale } = transform.current;
+      contentRef.current.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+    }
+  }, []);
+
+  const handleMouseDown = (e: MouseEvent) => {
+    isDragging.current = true;
+    lastMousePosition.current = { x: e.clientX, y: e.clientY };
+  };
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!isDragging.current) return;
+
+    const deltaX = e.clientX - lastMousePosition.current.x;
+    const deltaY = e.clientY - lastMousePosition.current.y;
+
+    transform.current.x += deltaX;
+    transform.current.y += deltaY;
+    lastMousePosition.current = { x: e.clientX, y: e.clientY };
+
+    requestAnimationFrame(updateTransform);
+  };
+
+  const handleMouseUp = () => {
+    isDragging.current = false;
+  };
+
+  const handleWheel = (e: WheelEvent) => {
+    if (e.ctrlKey) {
+      e.preventDefault();
+      const { deltaY, clientX, clientY } = e;
+      const zoomFactor = deltaY > 0 ? 0.9 : 1.1;
+      const newScale = transform.current.scale * zoomFactor;
+
+      // Calculate the position to zoom towards the mouse pointer
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (rect) {
+        const offsetX = clientX - rect.left;
+        const offsetY = clientY - rect.top;
+
+        transform.current.x -= (offsetX / transform.current.scale) * (zoomFactor - 1);
+        transform.current.y -= (offsetY / transform.current.scale) * (zoomFactor - 1);
+      }
+
+      transform.current.scale = newScale;
+      requestAnimationFrame(updateTransform);
+    }
+  };
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const handleMouseDown = (e: MouseEvent) => {
-      setIsDragging(true);
-      setStartX(e.clientX - offsetX);
-      setStartY(e.clientY - offsetY);
-    };
-
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!isDragging) return;
-      const newOffsetX = (e.clientX - startX) / zoom;
-      const newOffsetY = (e.clientY - startY) / zoom;
-      setOffsetX(newOffsetX);
-      setOffsetY(newOffsetY);
-    };
-
-    const handleMouseUp = () => {
-      setIsDragging(false);
-    };
-
-    const preventZoom = (e: WheelEvent) => {
-      if (e.ctrlKey) {
-        e.preventDefault();
-      }
-    };
-
     container.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
-    container.addEventListener('wheel', preventZoom, { passive: false });
+    container.addEventListener('wheel', handleWheel, { passive: false });
 
     return () => {
       container.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
-      container.removeEventListener('wheel', preventZoom);
+      container.removeEventListener('wheel', handleWheel);
     };
-  }, [zoom, isDragging, offsetX, offsetY, startX, startY]);
-
-  const handleZoomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newZoom = parseFloat(e.target.value);
-    setZoom(newZoom);
-  };
+  }, [updateTransform]);
 
   return (
-    <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }}>
+    <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }} ref={containerRef}>
       <div
-        ref={containerRef}
+        ref={contentRef}
         style={{
           position: 'absolute',
           top: 0,
           left: 0,
-          width: '100%',
-          height: '100%',
-          cursor: isDragging ? 'grabbing' : 'grab',
-          background: '#fafafa',
-          backgroundImage: 'radial-gradient(#d3d3d3 1px, transparent 1px)',
-          backgroundSize: `${20 * zoom}px ${20 * zoom}px`,
-          backgroundPosition: `${offsetX * zoom}px ${offsetY * zoom}px`,
-          overflow: 'hidden',
+          cursor: isDragging.current ? 'grabbing' : 'grab',
+          transform: 'translate(0px, 0px) scale(1)',
+          transformOrigin: '0 0',
+          willChange: 'transform',
         }}
       >
-        <div
-          style={{
-            transform: `scale(${zoom}) translate(${offsetX}px, ${offsetY}px)`,
-            transformOrigin: '0 0',
-            transition: 'transform 0.1s ease-out',
-          }}
-        >
-          {children}
-        </div>
+        {children}
       </div>
       <input
         type="range"
         min="0.5"
         max="3"
         step="0.1"
-        value={zoom}
-        onChange={handleZoomChange}
+        defaultValue="1"
+        onChange={(e) => {
+          const newZoom = parseFloat(e.target.value);
+          const rect = containerRef.current?.getBoundingClientRect();
+          if (rect) {
+            const offsetX = window.innerWidth / 2 - rect.left;
+            const offsetY = window.innerHeight / 2 - rect.top;
+
+            // Adjust position to zoom towards the center
+            transform.current.x = -offsetX * (newZoom - transform.current.scale);
+            transform.current.y = -offsetY * (newZoom - transform.current.scale);
+          }
+          transform.current.scale = newZoom;
+          updateTransform();
+        }}
         style={{
           position: 'absolute',
           right: '20px',
