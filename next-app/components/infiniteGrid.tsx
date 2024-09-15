@@ -37,15 +37,17 @@ const InfiniteGrid: React.FC<InfiniteGridProps> = ({ children }) => {
 
     const handleMouseMove = (e: MouseEvent) => {
       if (!isDragging) return;
-      const dx = (e.clientX - startX) / zoom;
-      const dy = (e.clientY - startY) / zoom;
-      setOffsetX(prevOffsetX => prevOffsetX + dx);
-      setOffsetY(prevOffsetY => prevOffsetY + dy);
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      const newOffsetX = offsetX + dx / zoom;
+      const newOffsetY = offsetY + dy / zoom;
+      setOffsetX(newOffsetX);
+      setOffsetY(newOffsetY);
       setStartX(e.clientX);
       setStartY(e.clientY);
 
       // Update all blocks' positions
-      const event = new CustomEvent('gridMove', { detail: { dx, dy } });
+      const event = new CustomEvent('gridMove', { detail: { newOffsetX, newOffsetY } });
       window.dispatchEvent(event);
     };
 
