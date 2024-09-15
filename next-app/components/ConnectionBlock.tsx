@@ -1,16 +1,27 @@
 import React, { useState, useRef, useEffect } from 'react';
+import Connection from './Connection';
 
 interface ConnectionBlockProps {
   title: string;
   position: { x: number; y: number };
   isStarter?: boolean;
   onPositionChange: (id: string, newPosition: { x: number; y: number }) => void;
+  onConnectionClick: (id: string, position: 'top' | 'right' | 'bottom' | 'left') => void;
   id: string;
   zoom: number;
   gridOffset: { x: number; y: number };
 }
 
-const ConnectionBlock: React.FC<ConnectionBlockProps> = ({ id, title, position, isStarter, onPositionChange, zoom, gridOffset }) => {
+const ConnectionBlock: React.FC<ConnectionBlockProps> = ({
+  id,
+  title,
+  position,
+  isStarter,
+  onPositionChange,
+  onConnectionClick,
+  zoom,
+  gridOffset
+}) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const blockRef = useRef<HTMLDivElement>(null);
@@ -68,6 +79,10 @@ const ConnectionBlock: React.FC<ConnectionBlockProps> = ({ id, title, position, 
   return (
     <div ref={blockRef} style={blockStyle} onMouseDown={handleMouseDown} className="connection-block">
       {title}
+      <Connection position="top" onConnectionClick={() => onConnectionClick(id, 'top')} />
+      <Connection position="right" onConnectionClick={() => onConnectionClick(id, 'right')} />
+      <Connection position="bottom" onConnectionClick={() => onConnectionClick(id, 'bottom')} />
+      <Connection position="left" onConnectionClick={() => onConnectionClick(id, 'left')} />
     </div>
   );
 };
