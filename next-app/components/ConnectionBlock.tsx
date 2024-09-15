@@ -3,6 +3,7 @@ import Connection from './Connection';
 
 interface ConnectionBlockProps {
   title: string;
+  description: string;
   position: { x: number; y: number };
   isStarter?: boolean;
   onPositionChange: (id: string, newPosition: { x: number; y: number }) => void;
@@ -15,6 +16,7 @@ interface ConnectionBlockProps {
 const ConnectionBlock: React.FC<ConnectionBlockProps> = ({
   id,
   title,
+  description,
   position,
   isStarter,
   onPositionChange,
@@ -59,26 +61,39 @@ const ConnectionBlock: React.FC<ConnectionBlockProps> = ({
     };
   }, [isDragging, dragStart, onPositionChange, id, zoom, position]);
 
-  const blockStyle = {
+  const blockStyle: React.CSSProperties = {
     position: 'absolute',
     left: `${position.x}px`,
     top: `${position.y}px`,
-    padding: isStarter ? '20px 40px' : '10px',
+    padding: '20px',
     backgroundColor: '#fff',
     border: '1px solid #FFE0B2',
-    borderRadius: isStarter ? '20px' : '8px',
+    borderRadius: '12px',
     cursor: isDragging ? 'grabbing' : 'grab',
-    boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-    fontSize: isStarter ? '24px' : '16px',
-    fontWeight: isStarter ? 'bold' : 'normal',
+    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
     userSelect: 'none',
     transform: `scale(${zoom})`,
     transformOrigin: 'top left',
+    width: '300px',
+    minHeight: '150px',
+  };
+
+  const titleStyle: React.CSSProperties = {
+    fontSize: '20px',
+    fontWeight: 'bold',
+    marginBottom: '10px',
+  };
+
+  const descriptionStyle: React.CSSProperties = {
+    fontSize: '16px',
+    marginTop: '10px',
+    whiteSpace: 'pre-wrap',
   };
 
   return (
     <div ref={blockRef} style={blockStyle} onMouseDown={handleMouseDown} className="connection-block">
-      {title}
+      <div style={titleStyle}>{title}</div>
+      {!isStarter && <div style={descriptionStyle}>{description}</div>}
       <Connection position="top" onConnectionClick={() => onConnectionClick(id, 'top')} />
       <Connection position="right" onConnectionClick={() => onConnectionClick(id, 'right')} />
       <Connection position="bottom" onConnectionClick={() => onConnectionClick(id, 'bottom')} />

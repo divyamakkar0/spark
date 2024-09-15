@@ -7,6 +7,7 @@ import ConnectionBlock from "../../components/ConnectionBlock";
 interface Block {
   id: string;
   title: string;
+  description: string;
   position: { x: number; y: number };
   isStarter?: boolean;
 }
@@ -23,10 +24,10 @@ export default function PlayGroundPage() {
   const [activeConnection, setActiveConnection] = useState<{ id: string; position: 'top' | 'right' | 'bottom' | 'left' } | null>(null);
 
   useEffect(() => {
-    const centerX = window.innerWidth / 2 - 100;
-    const centerY = window.innerHeight / 2 - 50;
+    const centerX = window.innerWidth / 2 - 150;
+    const centerY = window.innerHeight / 2 - 75;
     setBlocks([
-      { id: '1', title: 'Starter', position: { x: centerX, y: centerY }, isStarter: true }
+      { id: '1', title: 'Query', description: 'Enter your query here', position: { x: centerX, y: centerY }, isStarter: true }
     ]);
   }, []);
 
@@ -34,9 +35,10 @@ export default function PlayGroundPage() {
     const newBlock: Block = {
       id: Date.now().toString(),
       title,
+      description: '', // This will be updated with the user query later
       position: {
-        x: Math.random() * (window.innerWidth - 200) + 100,
-        y: Math.random() * (window.innerHeight - 200) + 100
+        x: Math.random() * (window.innerWidth - 300) + 150,
+        y: Math.random() * (window.innerHeight - 150) + 75
       }
     };
     setBlocks([...blocks, newBlock]);
@@ -115,6 +117,7 @@ export default function PlayGroundPage() {
                 key={block.id}
                 id={block.id}
                 title={block.title}
+                description={block.description}
                 position={block.position}
                 isStarter={block.isStarter}
                 onPositionChange={updateBlockPosition}
