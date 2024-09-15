@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, ReactNode } from 'react';
 
 interface InfiniteGridProps {
-  children: React.ReactNode;
+  children: (props: { zoom: number; gridOffset: { x: number; y: number } }) => ReactNode;
 }
 
 const InfiniteGrid: React.FC<InfiniteGridProps> = ({ children }) => {
@@ -18,41 +18,50 @@ const InfiniteGrid: React.FC<InfiniteGridProps> = ({ children }) => {
     if (!container) return;
 
     const handleMouseDown = (e: MouseEvent) => {
+      if ((e.target as HTMLElement).closest('.connection-block')) return;
       setIsDragging(true);
-      setStartX(e.clientX - offsetX);
-      setStartY(e.clientY - offsetY);
+      setStartX(e.clientX);
+      setStartY(e.clientY);
     };
 
     const handleMouseMove = (e: MouseEvent) => {
       if (!isDragging) return;
-      const newOffsetX = (e.clientX - startX) / zoom;
-      const newOffsetY = (e.clientY - startY) / zoom;
-      setOffsetX(newOffsetX);
-      setOffsetY(newOffsetY);
+      const dx = (e.clientX - startX) / zoom;
+      const dy = (e.clientY - startY) / zoom;
+      setOffsetX(prevOffsetX => prevOffsetX + dx);
+      setOffsetY(prevOffsetY => prevOffsetY + dy);
+      setStartX(e.clientX);
+      setStartY(e.clientY);
+
+      // Update all blocks' positions
+      const event = new CustomEvent('gridMove', { detail: { dx, dy } });
+      window.dispatchEvent(event);
     };
 
     const handleMouseUp = () => {
       setIsDragging(false);
     };
 
-    const preventZoom = (e: WheelEvent) => {
+    const handleWheel = (e: WheelEvent) => {
       if (e.ctrlKey) {
         e.preventDefault();
+        const delta = e.deltaY > 0 ? 0.9 : 1.1;
+        setZoom((prevZoom) => Math.max(0.5, Math.min(3, prevZoom * delta)));
       }
     };
 
     container.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
-    container.addEventListener('wheel', preventZoom, { passive: false });
+    container.addEventListener('wheel', handleWheel, { passive: false });
 
     return () => {
       container.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
-      container.removeEventListener('wheel', preventZoom);
+      container.removeEventListener('wheel', handleWheel);
     };
-  }, [zoom, isDragging, offsetX, offsetY, startX, startY]);
+  }, [zoom, isDragging, offsetX, offsetY]);
 
   const handleZoomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newZoom = parseFloat(e.target.value);
@@ -84,7 +93,7 @@ const InfiniteGrid: React.FC<InfiniteGridProps> = ({ children }) => {
             transition: 'transform 0.1s ease-out',
           }}
         >
-          {children}
+          {children({ zoom, gridOffset: { x: offsetX, y: offsetY } })}
         </div>
       </div>
       <input

@@ -6,32 +6,32 @@ interface ConnectionBlockProps {
   isStarter?: boolean;
   onPositionChange: (id: string, newPosition: { x: number; y: number }) => void;
   id: string;
+  zoom: number;
+  gridOffset: { x: number; y: number };
 }
 
-const ConnectionBlock: React.FC<ConnectionBlockProps> = ({ id, title, position, isStarter, onPositionChange }) => {
+const ConnectionBlock: React.FC<ConnectionBlockProps> = ({ id, title, position, isStarter, onPositionChange, zoom, gridOffset }) => {
   const [isDragging, setIsDragging] = useState(false);
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const blockRef = useRef<HTMLDivElement>(null);
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (blockRef.current) {
-      const rect = blockRef.current.getBoundingClientRect();
-      setOffset({
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top
-      });
-    }
+    e.stopPropagation();
     setIsDragging(true);
+    setDragStart({ x: e.clientX, y: e.clientY });
   };
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (isDragging) {
+        const dx = (e.clientX - dragStart.x) / zoom;
+        const dy = (e.clientY - dragStart.y) / zoom;
         const newPosition = {
-          x: e.clientX - offset.x,
-          y: e.clientY - offset.y
+          x: position.x + dx,
+          y: position.y + dy
         };
         onPositionChange(id, newPosition);
+        setDragStart({ x: e.clientX, y: e.clientY });
       }
     };
 
@@ -39,21 +39,35 @@ const ConnectionBlock: React.FC<ConnectionBlockProps> = ({ id, title, position, 
       setIsDragging(false);
     };
 
+    const handleGridMove = (e: CustomEvent<{ dx: number; dy: number }>) => {
+      if (!isDragging) {
+        const { dx, dy } = e.detail;
+        const newPosition = {
+          x: position.x + dx,
+          y: position.y + dy
+        };
+        onPositionChange(id, newPosition);
+      }
+    };
+
     if (isDragging) {
       window.addEventListener('mousemove', handleMouseMove);
       window.addEventListener('mouseup', handleMouseUp);
     }
 
+    window.addEventListener('gridMove', handleGridMove as EventListener);
+
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('gridMove', handleGridMove as EventListener);
     };
-  }, [isDragging, offset, onPositionChange, id]);
+  }, [isDragging, dragStart, onPositionChange, id, zoom, position]);
 
   const blockStyle = {
     position: 'absolute' as 'absolute',
-    left: `${position.x}px`,
-    top: `${position.y}px`,
+    left: `${(position.x - gridOffset.x) * zoom}px`,
+    top: `${(position.y - gridOffset.y) * zoom}px`,
     padding: isStarter ? '20px 40px' : '10px',
     backgroundColor: '#fff',
     border: '1px solid #FFE0B2',
@@ -63,10 +77,12 @@ const ConnectionBlock: React.FC<ConnectionBlockProps> = ({ id, title, position, 
     fontSize: isStarter ? '24px' : '16px',
     fontWeight: isStarter ? 'bold' : 'normal',
     userSelect: 'none' as 'none',
+    transform: `scale(${zoom})`,
+    transformOrigin: 'top left',
   };
 
   return (
-    <div ref={blockRef} style={blockStyle} onMouseDown={handleMouseDown}>
+    <div ref={blockRef} style={blockStyle} onMouseDown={handleMouseDown} className="connection-block">
       {title}
     </div>
   );

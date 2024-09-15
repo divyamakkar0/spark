@@ -10,7 +10,6 @@ interface Block {
   position: { x: number; y: number };
   isStarter?: boolean;
 }
-// hello
 
 export default function PlayGroundPage() {
   const [blocks, setBlocks] = useState<Block[]>([]);
@@ -44,16 +43,22 @@ export default function PlayGroundPage() {
   return (
     <>
       <InfiniteGrid>
-        {blocks.map((block) => (
-          <ConnectionBlock
-            key={block.id}
-            id={block.id}
-            title={block.title}
-            position={block.position}
-            isStarter={block.isStarter}
-            onPositionChange={updateBlockPosition}
-          />
-        ))}
+        {({ zoom, gridOffset }) => (
+          <>
+            {blocks.map((block) => (
+              <ConnectionBlock
+                key={block.id}
+                id={block.id}
+                title={block.title}
+                position={block.position}
+                isStarter={block.isStarter}
+                onPositionChange={updateBlockPosition}
+                zoom={zoom}
+                gridOffset={gridOffset}
+              />
+            ))}
+          </>
+        )}
       </InfiniteGrid>
       <AddBlockButton onAddBlock={addBlock} />
     </>
