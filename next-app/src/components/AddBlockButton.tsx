@@ -1,85 +1,112 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 
 interface AddBlockButtonProps {
-  onAddBlock: (title: string) => void;
+  onAddBlock: (title: string, userQuery: string | number | File) => void;
 }
 
 const AddBlockButton: React.FC<AddBlockButtonProps> = ({ onAddBlock }) => {
   const [showForm, setShowForm] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
-  const [subCategory, setSubCategory] = useState('');
+  const [userQuery, setUserQuery] = useState('');
+  const [categoryValue, setCategoryValue] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedOption) {
-      onAddBlock(selectedOption);
-      setSelectedOption('');
+      let submitValue: string | number | File = userQuery;
+      if (selectedOption === 'Category') {
+        submitValue = categoryValue;
+      } else if (selectedOption === 'Resume' && fileInputRef.current?.files?.[0]) {
+        submitValue = fileInputRef.current.files[0];
+      }
+      onAddBlock(selectedOption, submitValue);
       setShowForm(false);
+      setSelectedOption('');
+      setUserQuery('');
+      setCategoryValue('');
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
-  const renderInputField = () => {
+  const getPlaceholder = () => {
     switch (selectedOption) {
-      case 'Add Category':
-        return (
-          <select
-            value={subCategory}
-            onChange={(e) => setSubCategory(e.target.value)}
-            style={{
-              marginBottom: '15px',
-              width: '100%',
-              padding: '10px',
-              borderRadius: '8px',
-              border: '1px solid #FFE0B2',
-              fontSize: '14px',
-              color: '#333',
-              backgroundColor: '#FFF3E0',
-            }}
-          >
-            <option value="">Select a category</option>
-            {[...Array(10)].map((_, i) => (
-              <option key={i + 1} value={`Category ${i + 1}`}>
-                Category {i + 1}
-              </option>
-            ))}
-          </select>
-        );
-      case 'Add Resume':
-        return (
-          <input
-            type="file"
-            accept=".pdf,.doc,.docx"
-            style={{
-              marginBottom: '15px',
-              width: '100%',
-              padding: '10px',
-              borderRadius: '8px',
-              border: '1px solid #FFE0B2',
-              fontSize: '14px',
-              color: '#333',
-              backgroundColor: '#FFF3E0',
-            }}
-          />
-        );
+      case 'Web Search':
+        return 'Enter research question about the companies';
+      case 'Find Employees':
+        return 'Gather specific employee type';
+      case 'Outreach':
+        return 'Enter specific resume features to include';
       default:
-        return (
-          <textarea
-            style={{
-              marginBottom: '15px',
-              width: '100%',
-              minHeight: '120px',
-              padding: '10px',
-              borderRadius: '8px',
-              border: '1px solid #FFE0B2',
-              fontSize: '14px',
-              color: '#333',
-              resize: 'vertical',
-              backgroundColor: '#FFF3E0',
-            }}
-            placeholder="Enter text here"
-          />
-        );
+        return 'Enter your query...';
     }
+  };
+
+  const renderInput = () => {
+    if (selectedOption === 'Category') {
+      return (
+        <select
+          value={categoryValue}
+          onChange={(e) => setCategoryValue(e.target.value)}
+          style={{
+            marginBottom: '15px',
+            width: '100%',
+            padding: '10px',
+            borderRadius: '8px',
+            border: '1px solid #FFE0B2',
+            fontSize: '14px',
+            color: '#333',
+            backgroundColor: '#FFF3E0',
+          }}
+          required
+        >
+          <option value="" disabled>Select a category...</option>
+          <option value="linkedin_url">LinkedIn</option>
+          <option value="founder_identifiers">Founders</option>
+          <option value="categories">Categories</option>
+        </select>
+      );
+    } else if (selectedOption === 'Resume') {
+      return (
+        <input
+          type="file"
+          ref={fileInputRef}
+          accept=".pdf,.doc,.docx"
+          style={{
+            marginBottom: '15px',
+            width: '100%',
+            padding: '10px',
+            borderRadius: '8px',
+            border: '1px solid #FFE0B2',
+            fontSize: '14px',
+            color: '#333',
+            backgroundColor: '#FFF3E0',
+          }}
+          required
+        />
+      );
+    } else if (['Web Search', 'Find Employees', 'Outreach'].includes(selectedOption)) {
+      return (
+        <textarea
+          value={userQuery}
+          onChange={(e) => setUserQuery(e.target.value)}
+          placeholder={getPlaceholder()}
+          style={{
+            width: '100%',
+            minHeight: '100px',
+            marginBottom: '15px',
+            padding: '10px',
+            borderRadius: '8px',
+            border: '1px solid #FFE0B2',
+            fontSize: '14px',
+            resize: 'vertical',
+            boxSizing: 'border-box',
+          }}
+          required
+        />
+      );
+    }
+    return null;
   };
 
   return (
@@ -123,7 +150,7 @@ const AddBlockButton: React.FC<AddBlockButtonProps> = ({ onAddBlock }) => {
           }}
         >
           <form onSubmit={handleSubmit}>
-            <select 
+            <select
               value={selectedOption}
               onChange={(e) => setSelectedOption(e.target.value)}
               style={{
@@ -136,16 +163,16 @@ const AddBlockButton: React.FC<AddBlockButtonProps> = ({ onAddBlock }) => {
                 color: '#333',
                 backgroundColor: '#FFF3E0',
               }}
+              required
             >
-              <option value="" disabled style={{ color: '#999' }}>Select a block type...</option>
-              <option value="Add Category">Category</option>
+              <option value="" disabled>Select a block type...</option>
+              <option value="Category">Category</option>
               <option value="Web Search">Web Search</option>
               <option value="Find Employees">Find Employees</option>
               <option value="Outreach">Outreach</option>
-              <option value="Add Resume">Resume</option>
-
+              <option value="Resume">Resume</option>
             </select>
-            {renderInputField()}
+            {renderInput()}
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <button
                 type="button"

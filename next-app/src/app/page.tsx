@@ -143,6 +143,7 @@ export default function Home() {
   const [state, setState] = useState(State.IDLE);
 
   const createNewCompanySearch = useMutation(api.tasks.createNewCompanySearch);
+  const resetCategories = useMutation(api.tasks.resetCategories);
 
   const submitQuery = async () => {
     setState(State.LOADING);
@@ -163,6 +164,7 @@ export default function Home() {
     data = data.data
     console.log(data);
     createNewCompanySearch({data: data});
+    resetCategories();
 
     setState(State.SUCCESS);
     router.push('/query');

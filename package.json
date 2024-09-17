@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "fetch": "^1.1.0",
+    "groq-sdk": "^0.7.0"
+  }
+}
