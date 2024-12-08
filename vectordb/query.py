@@ -66,7 +66,7 @@ def get_companies(prompt:str)->list[str]:
 
   query_cohere = str({i:fields[i] for i in fields if i not in void_fields})
   docs = [str(companies[i]) for i in companies_shortlist]
-  results = co.rerank(query=query_cohere, documents=docs, top_n=25, model="rerank-english-v3.0")
+  results = co.rerank(query=query_cohere, documents=docs, top_n=5, model="rerank-english-v3.0")
 
   final_companies = [companies[companies_shortlist[results.results[i].index]] for i in range(len(results.results))]
   return final_companies
